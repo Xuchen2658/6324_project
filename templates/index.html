@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 智能衣橱 - UTA CSE Demo</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+    
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/element-plus"></script>
+    <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+    
+    <style>
+        body { background-color: #f5f7fa; margin: 0; font-family: "Helvetica Neue",Helvetica,Arial,sans-serif; }
+        .header { background: #409EFF; color: white; padding: 20px 0; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+        .upload-card, .result-card { min-height: 500px; border-radius: 12px; }
+        .preview-img { width: 100%; border-radius: 8px; margin-top: 20px; border: 1px solid #dcdfe6; }
+        .tag-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+        .cat-title { font-size: 24px; color: #67C23A; font-weight: bold; }
+        .conf-label { font-size: 14px; color: #909399; margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <el-icon :size="25" style="vertical-align: middle;"><memo /></el-icon>
+            <span style="vertical-align: middle; margin-left: 10px;">DeepFashion AI 智能识别系统</span>
+        </div>
+
+        <div class="container">
+            <el-row :gutter="30">
+                <el-col :span="10">
+                    <el-card class="upload-card">
+                        <template #header><strong>拍照上传</strong></template>
+                        <el-upload
+                            drag
+                            action="http://localhost:5000/upload"
+                            :on-success="handleSuccess"
+                            :before-upload="beforeUpload"
+                            :show-file-list="false"
+                        >
+                            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+                            <div class="el-upload__text">将衣服照片拖到此处，或<em>点击上传</em></div>
+                        </el-upload>
+                        
+                        <div v-if="imageUrl" style="text-align: center;">
+                            <img :src="imageUrl" class="preview-img" />
+                        </div>
+                    </el-card>
+                </el-col>
+
+                <el-col :span="14">
+                    <el-card class="result-card">
+                        <template #header><strong>AI 深度分析报告</strong></template>
+                        
+                        <div v-if="loading" v-loading="true" element-loading-text="正在提取 2048 维特征向量..." style="height: 300px;"></div>
+
+                        <div v-else-if="result">
+                            <div style="margin-bottom: 30px;">
+                                <h3>核心品类 (Category)</h3>
+                                <div class="cat-title">
+                                    {{ result.category_name }}
+                                    <span class="conf-label">置信度: {{ result.category_conf }}</span>
+                                </div>
+                            </div>
+
+                            <el-divider></el-divider>
+
+                            <div>
+                                <h3>细节属性描述 (Attributes)</h3>
+                                <div class="tag-group">
+                                    <el-tag 
+                                        v-for="attr in result.attribute_names" 
+                                        :key="attr" 
+                                        type="info" 
+                                        effect="plain" 
+                                        round
+                                    >
+                                        {{ attr }}
+                                    </el-tag>
+                                </div>
+                                <el-empty v-if="result.attribute_names.length === 0" description="未发现显著特征"></el-empty>
+                            </div>
+                        </div>
+
+                        <el-empty v-else description="请上传衣服图片开始识别"></el-empty>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue;
+
+        const app = createApp({
+            setup() {
+                const imageUrl = ref('');
+                const loading = ref(false);
+                const result = ref(null);
+
+                const beforeUpload = (file) => {
+                    loading.value = true;
+                    return true;
+                };
+
+                const handleSuccess = (res) => {
+                    loading.value = false;
+                    result.value = res;
+                    // 如果后端返回的是相对路径，需要拼上服务器地址
+                    imageUrl.value = res.image_url.startsWith('http') 
+                        ? res.image_url 
+                        : 'http://localhost:5000' + res.image_url;
+                    
+                    ElementPlus.ElMessage.success('识别完成，特征已提取！');
+                };
+
+                return {
+                    imageUrl,
+                    loading,
+                    result,
+                    handleSuccess,
+                    beforeUpload
+                };
+            }
+        });
+
+        // 注册 Element Plus 和图标
+        app.use(ElementPlus);
+        for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+            app.component(key, component);
+        }
+        app.mount('#app');
+    </script>
+</body>
+</html>
