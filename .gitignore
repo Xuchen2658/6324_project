@@ -3,9 +3,6 @@
 venv/
 __pycache__/
 
-# 忽略本地模型权重 (建议让组员手动下载，或使用 Git LFS)
-*.pth
-
 # 忽略上传的测试图片和特征数据
 static/uploads/*
 !static/uploads/.gitkeep
