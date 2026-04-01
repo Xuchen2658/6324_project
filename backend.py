@@ -74,7 +74,11 @@ else:
 # 渲染首页
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', result=None)
+# @app.route('/')
+# def index():
+#     return render_template('index.html')
+
 
 
 # 静态文件服务 (让前端能看到上传的图)
@@ -139,4 +143,4 @@ def upload_and_predict():
 
 if __name__ == '__main__':
     # 端口固定为 5000 配合前端
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
