@@ -1,125 +1,239 @@
-# 👕 Intelligent Clothing Management System
+# 👕 AI Smart Wardrobe System
 
 ## 📌 Project Overview
 
-This project is an intelligent clothing management system based on computer vision.
-It uses a deep learning model (ResNet-50) to automatically recognize clothing categories and attributes from images, and provides similarity retrieval and recommendation functions.
+The **AI Smart Wardrobe System** is a full-stack web application that integrates **computer vision, machine learning, and web development** to help users intelligently manage their clothing and receive outfit recommendations.
+
+Users can upload clothing images, and the system will automatically:
+
+* Recognize clothing category and attributes
+* Store items in a personal wardrobe
+* Recommend outfits based on current weather
+* Find visually similar clothes using feature embeddings
+
+This project is built using **Flask + PyTorch + Vue + SQLite**.
 
 ---
 
 ## 🚀 Features
 
-### 1. Clothing Image Recognition
+### 👤 User System
 
-* Upload clothing images
-* Automatically identify:
-
-  * Category (e.g., hoodie, shirt)
-  * Attributes (e.g., black, long-sleeve)
-* Display results on web interface
-
-### 2. Feature Extraction
-
-* Extract 2048-dimensional feature vectors using CNN
-* Save feature vectors locally (`.npy` files)
-
-### 3. Similar Clothing Retrieval
-
-* Compare feature vectors using cosine similarity
-* Retrieve top-K similar clothing items
-
-### 4. Recommendation System
-
-* Provide simple rule-based recommendations
-* Based on category and attributes
+* User registration and login
+* Session-based authentication
+* Multi-user data isolation (each user has an independent wardrobe)
 
 ---
 
-## 🏗️ Tech Stack
+### 🧥 Clothing Management
 
-* Python 3.10+
-* Flask (Backend)
-* Vue 3 + Element Plus (Frontend)
-* PyTorch (Deep Learning)
-* NumPy (Feature processing)
+* Single upload & batch upload
+* Automatic AI recognition:
+
+  * Category (e.g., shirt, pants, coat)
+  * Attributes (multi-label)
+  * Main category (Tops / Pants / Shoes / etc.)
+* Automatically generated tags:
+
+  * Season (Spring/Summer, Autumn/Winter)
+  * Thickness (Thin / Medium / Thick)
+* Store feature vectors for similarity search
+* View wardrobe with:
+
+  * Sorting (Newest / Oldest)
+  * Category filtering
+  * Keyword search
+
+---
+
+### 🔍 Similarity Search
+
+* Upload an image (not stored)
+* Retrieve Top-K most similar clothes from wardrobe
+* Based on **cosine similarity of deep features**
+
+---
+
+### 🌤 Weather-Based Recommendation
+
+* Select city from dropdown
+* Fetch real-time weather via API
+* Recommend suitable clothes from wardrobe
+* Scoring based on:
+
+  * Temperature
+  * Rain probability
+  * Clothing thickness & season
+
+---
+
+### 🗑 Advanced Wardrobe Operations
+
+* Delete single item
+* Batch delete
+* Recently deleted list
+* Restore deleted items
+
+---
+
+### 🌐 Multi-Language Support
+
+* Chinese
+* English
+* Spanish
+* Japanese
+* Korean
+
+---
+
+## 🧠 AI Model
+
+* Backbone: **ResNet50**
+* Multi-task learning:
+
+  * Category classification (50 classes)
+  * Attribute prediction (1000 classes)
+* Feature extraction:
+
+  * 2048-dim embedding
+* Similarity:
+
+  * Cosine similarity
+
+---
+
+## 🛠 Tech Stack
+
+| Layer      | Technology           |
+| ---------- | -------------------- |
+| Frontend   | Vue 3 + HTML + CSS   |
+| Backend    | Flask (Python)       |
+| AI Model   | PyTorch              |
+| Database   | SQLite               |
+| Image Proc | PIL + torchvision    |
+| API        | Open-Meteo (Weather) |
 
 ---
 
 ## 📂 Project Structure
 
-6324_project/\
-│\
-├── backend.py\
-├── checkpoint_c2_full_1000.pth\
-├── dataset/\
-│└── Anno_coarse/\
-│\
-├── templates/\
-│   └── index.html\
-│\
-├── static/\
-│   └── uploads/\
-│\
-└── requirements.txt
+```
+smart-wardrobe/
+│
+├── backend.py
+├── README.md
+├── requirements.txt
+│
+├── templates/
+│   ├── index.html
+│   ├── wardrobe.html
+│   ├── login.html
+│   ├── register.html
+│   └── recent_deleted.html
+│
+├── static/
+│   └── uploads/
+│
+├── dataset/
+│   └── Anno_coarse/
+│
+└── checkpoint_c2_full_1000.pth
+```
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚙️ Installation & Run
 
-### 1. Clone the repository
+### 1️⃣ Clone project
 
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+```bash
+git clone https://github.com/YOUR_USERNAME/smart-wardrobe.git
+cd smart-wardrobe
+```
 
-### 2. Create virtual environment
+---
 
+### 2️⃣ Create virtual environment
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```
 
-### 3. Install dependencies
+---
 
+### 3️⃣ Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
+
+If missing:
+
+```bash
+pip install flask torch torchvision pillow numpy requests
+```
 
 ---
 
-## ▶️ Run the Project
+### 4️⃣ Run backend
 
+```bash
 python backend.py
-
-Then open browser:
-http://127.0.0.1:5001
+```
 
 ---
 
-## 📸 Usage
+### 5️⃣ Open browser
 
-1. Upload an image of clothing
-2. System will:
-
-   * Identify category & attributes
-   * Show similar clothing
-   * Provide recommendations
+```
+http://127.0.0.1:5001
+```
 
 ---
 
 ## 📌 Notes
 
-* First upload may be slower due to model loading
-* Similar items appear after multiple uploads
-* All uploaded images are stored in `static/uploads`
+* Model file (`.pth`) is not included due to size limitation
+* Upload images are ignored by `.gitignore`
+* SQLite database is auto-created
 
 ---
 
-## 👥 Team Members
+## 📈 Future Improvements
+
+* Outfit combination recommendation
+* UI/UX redesign
+* Model optimization (faster inference)
+* Deployment (Docker / Cloud)
+* Mobile support
+
+---
+
+## 👤 Author
 
 * Jingxuan Wang
-* Xuchen Wang
+* Computer Science Graduate Student
+* University of Texas at Arlington
 
 ---
 
-## 🎯 Future Work
+## ⭐ Highlights
 
-* Integrate weather API for smart recommendations
-* Add database for clothing storage
-* Improve recommendation algorithm
-* Optimize model performance
+* Full-stack AI system
+* Real-time recommendation
+* Multi-user support
+* Multi-language UI
+* Practical ML deployment
+
+---
+
+## 📷 Demo (Optional)
+
+(Add screenshots here if needed)
+
+---
+
+## 📜 License
+
+This project is for academic and educational purposes.
