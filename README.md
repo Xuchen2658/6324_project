@@ -121,8 +121,47 @@ This project is built using **Flask + PyTorch + Vue + SQLite**.
 smart-wardrobe/
 │
 ├── backend.py
-├── README.md
+├── run.py
 ├── requirements.txt
+│
+├── app/
+│   ├── __init__.py
+│   │
+│   ├── config/
+│   │   ├── __init__.py
+│   │   └── settings.py
+│   │
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── database.py
+│   │   └── auth.py
+│   │
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── network.py
+│   │   ├── labels.py
+│   │   └── predictor.py
+│   │
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── file_service.py
+│   │   ├── clothes_service.py
+│   │   ├── feature_service.py
+│   │   └── weather_service.py
+│   │
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── pages.py
+│   │   ├── user_api.py
+│   │   ├── wardrobe_api.py
+│   │   ├── deleted_api.py
+│   │   ├── dashboard_api.py
+│   │   └── upload_api.py
+│   │
+│   └── utils/
+│       ├── __init__.py
+│       ├── constants.py
+│       └── i18n.py
 │
 ├── templates/
 │   ├── index.html
