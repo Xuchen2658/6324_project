@@ -47,19 +47,19 @@ It uses a deep learning model (ResNet-50) to automatically recognize clothing ca
 
 ## 📂 Project Structure
 
-6324_project/
-│
-├── backend.py
-├── checkpoint_c2_full_1000.pth
-├── dataset/
-│   └── Anno_coarse/
-│
-├── templates/
-│   └── index.html
-│
-├── static/
-│   └── uploads/
-│
+6324_project/\
+│\
+├── backend.py\
+├── checkpoint_c2_full_1000.pth\
+├── dataset/\
+│└── Anno_coarse/\
+│\
+├── templates/\
+│   └── index.html\
+│\
+├── static/\
+│   └── uploads/\
+│\
 └── requirements.txt
 
 ---
