@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ t.register }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background:#f5f7fa; }
+        .box { width:360px; margin:120px auto; background:#fff; padding:28px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+        input { width:100%; padding:10px; margin:8px 0; box-sizing:border-box; }
+        button { width:100%; padding:10px; background:#67C23A; color:white; border:none; border-radius:6px; }
+        .err { color:#f56c6c; margin-bottom:10px; }
+        a { display:block; margin-top:12px; text-align:center; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2>{{ t.register }}</h2>
+    {% if error %}<div class="err">{{ error }}</div>{% endif %}
+    <form method="post">
+        <input name="username" placeholder="{{ t.username }}" />
+        <input name="password" type="password" placeholder="{{ t.password }}" />
+        <button type="submit">{{ t.register }}</button>
+    </form>
+    <a href="/login">{{ t.login }}</a>
+</div>
+</body>
+</html>
