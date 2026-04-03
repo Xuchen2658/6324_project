@@ -118,65 +118,93 @@ This project is built using **Flask + PyTorch + Vue + SQLite**.
 ## 📂 Project Structure
 
 ```
+# 👗 AI Smart Wardrobe System
+
+## 📌 Project Overview
+This project is an AI-powered smart wardrobe system built with Flask and PyTorch.  
+It allows users to upload clothing images, automatically recognize attributes, manage a personal wardrobe, and receive recommendations based on weather and similarity search.
+
+---
+
+## ✨ Features
+
+### 👤 User System
+- Register / Login / Logout
+- Session-based authentication
+- Multi-user wardrobe isolation
+
+### 🧥 Clothing Management
+- Upload clothing images (single & batch)
+- Automatic recognition:
+  - Category
+  - Attributes
+  - Main category
+- Auto-generated:
+  - Season
+  - Thickness
+- Store feature vectors for similarity search
+
+### 🔍 Similarity Search
+- Upload an image to find similar items
+- Cosine similarity based on feature vectors
+- Helps avoid duplicate purchases
+
+### 🌦 Weather-Based Recommendation
+- Fetch real-time weather data
+- Recommend suitable clothes based on:
+  - Temperature
+  - Season
+  - Thickness
+
+### 🗂 Wardrobe Features
+- View all clothes
+- Search by category
+- Sort by time (newest / oldest)
+- Category filtering
+- Batch upload & batch delete
+
+### 🗑 Recently Deleted
+- View deleted items
+- Restore deleted clothes
+
+---
+
+## 🛠 Tech Stack
+
+| Layer       | Technology |
+|------------|-----------|
+| Backend    | Flask |
+| ML Model   | PyTorch (ResNet-based) |
+| Frontend   | HTML + Vue 3 |
+| Database   | SQLite |
+| Storage    | Local file system |
+
+---
+
+## 📂 Project Structure
+
+```text
 smart-wardrobe/
 │
-├── backend.py
-├── run.py
-├── requirements.txt
-│
 ├── app/
-│   ├── __init__.py
-│   │
 │   ├── config/
-│   │   ├── __init__.py
-│   │   └── settings.py
-│   │
 │   ├── core/
-│   │   ├── __init__.py
-│   │   ├── database.py
-│   │   └── auth.py
-│   │
 │   ├── models/
-│   │   ├── __init__.py
-│   │   ├── network.py
-│   │   ├── labels.py
-│   │   └── predictor.py
-│   │
-│   ├── services/
-│   │   ├── __init__.py
-│   │   ├── file_service.py
-│   │   ├── clothes_service.py
-│   │   ├── feature_service.py
-│   │   └── weather_service.py
-│   │
 │   ├── routes/
-│   │   ├── __init__.py
-│   │   ├── pages.py
-│   │   ├── user_api.py
-│   │   ├── wardrobe_api.py
-│   │   ├── deleted_api.py
-│   │   ├── dashboard_api.py
-│   │   └── upload_api.py
-│   │
+│   ├── services/
 │   └── utils/
-│       ├── __init__.py
-│       ├── constants.py
-│       └── i18n.py
 │
 ├── templates/
-│   ├── index.html
-│   ├── wardrobe.html
-│   ├── login.html
-│   ├── register.html
-│   └── recent_deleted.html
-│
 ├── static/
+│   ├── css/
+│   ├── js/
 │   └── uploads/
 │
 ├── dataset/
-│   └── Anno_coarse/
-│
-└── checkpoint_c2_full_1000.pth
+├── checkpoint_c2_full_1000.pth
+├── backend.py
+├── requirements.txt
+└── README.md
 ```
 
 ---
