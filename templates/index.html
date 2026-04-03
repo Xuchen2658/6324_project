@@ -22,8 +22,7 @@
         <div class="inline-row">
             <div>[[ t.currentUser ]]: <strong>[[ username ]]</strong></div>
 
-            <span class="muted">[[ t.changeLanguage || '更换语言' ]]:</span>
-
+            <span class="muted">[[ t.changeLanguage ]]:</span>
             <select v-model="language" @change="changeLanguage" class="small-btn" style="color:#333; background:#fff;">
                 <option value="zh">中文</option>
                 <option value="en">English</option>
@@ -43,8 +42,7 @@
             <div class="weather-box">
                 <h3>[[ t.todayWeather ]]</h3>
                 <div class="inline-row">
-                    <span class="muted">[[ t.cityLabel || t.city ]]:</span>
-
+                    <span class="muted">[[ t.cityLabel ]]:</span>
                     <select v-model="city">
                         <option v-for="c in cityOptions" :key="c" :value="c">[[ c ]]</option>
                     </select>

@@ -1,7 +1,6 @@
 const { createApp, ref, computed, onMounted } = Vue;
 
-createApp({
-    delimiters: ['[[', ']]'],
+const app = createApp({
     setup() {
         const username = ref(window.PAGE_DATA?.username || "");
         const language = ref(window.PAGE_DATA?.language || "zh");
@@ -103,4 +102,7 @@ createApp({
             goWardrobe
         };
     }
-}).mount('#app');
+});
+
+app.config.compilerOptions.delimiters = ['[[', ']]'];
+app.mount('#app');

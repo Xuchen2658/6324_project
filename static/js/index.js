@@ -1,7 +1,6 @@
 const { createApp, ref, computed, onMounted } = Vue;
 
-createApp({
-    delimiters: ['[[', ']]'],
+const app = createApp({
     setup() {
         const username = ref(window.PAGE_DATA?.username || "");
         const language = ref(window.PAGE_DATA?.language || "zh");
@@ -30,7 +29,8 @@ createApp({
                 todayWeather: '今日天气',
                 refreshWeather: '刷新天气',
                 city: '城市',
-                temperature: '当前温度',
+                cityLabel: '城市',
+                changeLanguage: '更换语言',
                 feelsLike: '体感温度',
                 tempMax: '最高温度',
                 tempMin: '最低温度',
@@ -51,6 +51,7 @@ createApp({
                 confidence: '置信度',
                 season: '季节',
                 thickness: '厚度',
+                temperature: '当前温度',
                 mostSimilarAfterStore: '入库后最相似衣物',
                 similarity: '相似度',
                 findSimilar: '找相似',
@@ -62,8 +63,6 @@ createApp({
                 batchUpload: '批量上传',
                 batchUploadDone: '批量上传完成',
                 recentDeleted: '最近删除'
-                changeLanguage: '更换语言',
-                cityLabel: '城市',
             },
             en: {
                 currentUser: 'Current User',
@@ -72,6 +71,8 @@ createApp({
                 todayWeather: "Today's Weather",
                 refreshWeather: 'Refresh Weather',
                 city: 'City',
+                cityLabel: 'City',
+                changeLanguage: 'Language',
                 temperature: 'Temperature',
                 feelsLike: 'Feels Like',
                 tempMax: 'Max Temperature',
@@ -104,8 +105,6 @@ createApp({
                 batchUpload: 'Batch Upload',
                 batchUploadDone: 'Batch upload finished',
                 recentDeleted: 'Recently Deleted'
-                changeLanguage: 'Language',
-                cityLabel: 'City',
             },
             es: {
                 currentUser: 'Usuario actual',
@@ -114,6 +113,8 @@ createApp({
                 todayWeather: 'Clima de hoy',
                 refreshWeather: 'Actualizar clima',
                 city: 'Ciudad',
+                cityLabel: 'Ciudad',
+                changeLanguage: 'Idioma',
                 temperature: 'Temperatura',
                 feelsLike: 'Sensación térmica',
                 tempMax: 'Temperatura máxima',
@@ -146,8 +147,6 @@ createApp({
                 batchUpload: 'Carga múltiple',
                 batchUploadDone: 'Carga múltiple finalizada',
                 recentDeleted: 'Eliminados recientemente'
-                changeLanguage: 'Idioma',
-                cityLabel: 'Ciudad',
             },
             ja: {
                 currentUser: '現在のユーザー',
@@ -156,6 +155,8 @@ createApp({
                 todayWeather: '今日の天気',
                 refreshWeather: '天気を更新',
                 city: '都市',
+                cityLabel: '都市',
+                changeLanguage: '言語',
                 temperature: '現在の気温',
                 feelsLike: '体感温度',
                 tempMax: '最高気温',
@@ -188,8 +189,6 @@ createApp({
                 batchUpload: '一括アップロード',
                 batchUploadDone: '一括アップロードが完了しました',
                 recentDeleted: '最近削除したアイテム'
-                changeLanguage: '言語',
-                cityLabel: '都市',
             },
             ko: {
                 currentUser: '현재 사용자',
@@ -198,6 +197,8 @@ createApp({
                 todayWeather: '오늘의 날씨',
                 refreshWeather: '날씨 새로고침',
                 city: '도시',
+                cityLabel: '도시',
+                changeLanguage: '언어',
                 temperature: '현재 기온',
                 feelsLike: '체감 온도',
                 tempMax: '최고 기온',
@@ -230,8 +231,6 @@ createApp({
                 batchUpload: '일괄 업로드',
                 batchUploadDone: '일괄 업로드 완료',
                 recentDeleted: '최근 삭제'
-                changeLanguage: '언어',
-                cityLabel: '도시',
             }
         };
 
@@ -251,7 +250,6 @@ createApp({
         const searchClothes = async () => {
             const q = searchQuery.value.trim();
             searchPerformed.value = true;
-
             if (!q) {
                 searchResults.value = [];
                 return;
@@ -386,4 +384,7 @@ createApp({
             logout
         };
     }
-}).mount('#app');
+});
+
+app.config.compilerOptions.delimiters = ['[[', ']]'];
+app.mount('#app');
