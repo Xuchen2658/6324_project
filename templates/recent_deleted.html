@@ -4,21 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Recently Deleted</title>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <style>
-        body { margin:0; font-family:Arial,sans-serif; background:#f5f7fa; }
-        .header { background:#409EFF; color:#fff; padding:20px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-        .container { max-width:1280px; margin:30px auto; padding:0 20px; }
-        .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:18px; }
-        .card { background:#fff; border-radius:12px; padding:12px; box-shadow:0 2px 10px rgba(0,0,0,.06); }
-        .card img { width:100%; height:240px; object-fit:cover; border-radius:10px; border:1px solid #e4e7ed; background:#fff; }
-        .title { margin-top:10px; font-size:18px; font-weight:bold; color:#303133; }
-        .meta { margin-top:8px; color:#606266; font-size:14px; line-height:1.8; }
-        .tag { display:inline-block; padding:5px 8px; background:#f4f4f5; margin:4px 4px 0 0; border-radius:6px; font-size:12px; }
-        .empty-box { background:#fff; padding:30px; border-radius:12px; text-align:center; color:#909399; box-shadow:0 2px 10px rgba(0,0,0,.06); }
-        button { padding:10px 14px; border:none; background:#409EFF; color:#fff; border-radius:6px; cursor:pointer; }
-        .success { background:#67C23A; width:100%; margin-top:12px; }
-    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/recent_deleted.css') }}">
+
+    <script>
+        window.PAGE_DATA = {
+            username: {{ username|tojson }},
+            language: {{ language|tojson }}
+        };
+    </script>
 </head>
 <body>
 <div id="app">
@@ -37,7 +32,9 @@
         <div class="grid" v-else>
             <div class="card" v-for="item in items" :key="item.id">
                 <img :src="item.image_url" :alt="item.filename" />
+
                 <div class="title">[[ item.category_name || 'Unknown' ]]</div>
+
                 <div class="meta">
                     <div>[[ t.mainCategory ]]: [[ item.main_category || 'Others' ]]</div>
                     <div>[[ t.filename ]]: [[ item.filename ]]</div>
@@ -48,121 +45,14 @@
                     <span class="tag" v-for="attr in item.attribute_names" :key="attr">[[ attr ]]</span>
                 </div>
 
-                <button class="success" @click="restoreItem(item.id)">[[ t.restore ]]</button>
+                <button class="success full-width" @click="restoreItem(item.id)">[[ t.restore ]]</button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-const { createApp, ref, computed, onMounted } = Vue;
-
-createApp({
-    delimiters: ['[[', ']]'],
-    setup() {
-        const username = ref('{{ username }}');
-        const language = ref('{{ language }}' || 'zh');
-        const items = ref([]);
-
-        const messages = {
-            zh: {
-                recentDeleted: '最近删除',
-                restore: '恢复',
-                restoreConfirm: '确定恢复这件衣物吗？',
-                restoreSuccess: '恢复成功',
-                recentDeletedEmpty: '最近删除为空',
-                viewWardrobe: '查看衣橱库',
-                mainCategory: '主分类',
-                filename: '文件名',
-                addedTime: '删除时间'
-            },
-            en: {
-                recentDeleted: 'Recently Deleted',
-                restore: 'Restore',
-                restoreConfirm: 'Are you sure to restore this item?',
-                restoreSuccess: 'Restore success',
-                recentDeletedEmpty: 'No recently deleted items',
-                viewWardrobe: 'View Wardrobe',
-                mainCategory: 'Main Category',
-                filename: 'Filename',
-                addedTime: 'Deleted Time'
-            },
-            es: {
-                recentDeleted: 'Eliminados recientemente',
-                restore: 'Restaurar',
-                restoreConfirm: '¿Seguro que deseas restaurar esta prenda?',
-                restoreSuccess: 'Restaurado correctamente',
-                recentDeletedEmpty: 'No hay elementos eliminados recientemente',
-                viewWardrobe: 'Ver armario',
-                mainCategory: 'Categoría principal',
-                filename: 'Nombre de archivo',
-                addedTime: 'Hora de eliminación'
-            },
-            ja: {
-                recentDeleted: '最近削除したアイテム',
-                restore: '復元',
-                restoreConfirm: 'この服を復元してもよろしいですか？',
-                restoreSuccess: '復元しました',
-                recentDeletedEmpty: '最近削除したアイテムはありません',
-                viewWardrobe: 'クローゼットを見る',
-                mainCategory: '主分類',
-                filename: 'ファイル名',
-                addedTime: '削除日時'
-            },
-            ko: {
-                recentDeleted: '최근 삭제',
-                restore: '복원',
-                restoreConfirm: '이 옷을 복원하시겠습니까?',
-                restoreSuccess: '복원되었습니다',
-                recentDeletedEmpty: '최근 삭제한 항목이 없습니다',
-                viewWardrobe: '옷장 보기',
-                mainCategory: '주 카테고리',
-                filename: '파일명',
-                addedTime: '삭제 시간'
-            }
-        };
-
-        const t = computed(() => messages[language.value] || messages.zh);
-
-        const loadDeleted = async () => {
-            const resp = await fetch('/api/recent_deleted');
-            const data = await resp.json();
-            items.value = data.items || [];
-        };
-
-        const restoreItem = async (id) => {
-            if (!confirm(t.value.restoreConfirm)) return;
-
-            const resp = await fetch(`/api/recent_deleted/${id}/restore`, {
-                method: 'POST'
-            });
-            const data = await resp.json();
-
-            if (!resp.ok) {
-                alert(data.error || 'Restore failed');
-                return;
-            }
-
-            alert(data.message || t.value.restoreSuccess);
-            await loadDeleted();
-        };
-
-        const goWardrobe = () => {
-            window.location.href = '/wardrobe';
-        };
-
-        onMounted(loadDeleted);
-
-        return {
-            username,
-            language,
-            items,
-            t,
-            restoreItem,
-            goWardrobe
-        };
-    }
-}).mount('#app');
-</script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/recent_deleted.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,49 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+}
+
+button {
+    padding: 10px 14px;
+    border: none;
+    background: #409EFF;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button.danger {
+    background: #F56C6C;
+}
+
+button.success {
+    background: #67C23A;
+}
+
+.inline-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.header {
+    background: #409EFF;
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.muted {
+    color: #777;
+    font-size: 13px;
+}
