@@ -26,9 +26,6 @@
             <select v-model="language" @change="changeLanguage" class="small-btn" style="color:#333; background:#fff;">
                 <option value="zh">中文</option>
                 <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="ja">日本語</option>
-                <option value="ko">한국어</option>
             </select>
 
             <button class="small-btn" @click="goWardrobe">[[ t.viewWardrobe ]]</button>
@@ -71,6 +68,54 @@
                     </div>
                 </div>
                 <div v-else class="muted">[[ t.noTodayRecommendation ]]</div>
+            </div>
+        </div>
+
+        <div class="occasion-box">
+            <h3>[[ t.occasionRecommend ]]</h3>
+
+            <div class="inline-row">
+                <span class="muted">[[ t.occasion ]]:</span>
+                <select v-model="selectedOccasion">
+                    <option v-for="o in occasionOptions" :key="o" :value="o">[[ o ]]</option>
+                </select>
+                <button class="small-btn" @click="loadOccasionRecommendations">[[ t.refreshOccasionRecommend ]]</button>
+            </div>
+
+            <div class="section">
+                <h4>[[ t.occasionRecommend ]]</h4>
+                <div v-if="occasionItems.length" class="sim-grid">
+                    <div class="sim-card" v-for="item in occasionItems" :key="item.id">
+                        <img :src="item.image_url" />
+                        <div><strong>[[ item.category_name ]]</strong></div>
+                        <div class="muted">[[ t.score ]]: [[ item.score ]]</div>
+                        <div class="muted">[[ item.reasons ? item.reasons.join(' / ') : '' ]]</div>
+                    </div>
+                </div>
+                <div v-else class="muted">[[ t.noOccasionItems ]]</div>
+            </div>
+
+            <div class="section">
+                <h4>[[ t.smartOutfits ]]</h4>
+                <div v-if="outfitRecommendations.length" class="outfit-grid">
+                    <div class="outfit-card" v-for="outfit in outfitRecommendations" :key="outfit.template.join('-') + outfit.score">
+                        <div><strong>[[ t.outfitScore ]]: [[ outfit.score ]]</strong></div>
+
+                        <div class="outfit-items">
+                            <div class="outfit-item" v-for="piece in outfit.items" :key="piece.id">
+                                <img :src="piece.image_url" />
+                                <div class="muted">[[ piece.role ]]</div>
+                                <div><strong>[[ piece.category_name ]]</strong></div>
+                            </div>
+                        </div>
+
+                        <div class="reason-list">
+                            <div><strong>[[ t.reasons ]]:</strong></div>
+                            <div v-for="reason in outfit.reasons" :key="reason">- [[ reason ]]</div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="muted">[[ t.noOutfits ]]</div>
             </div>
         </div>
 

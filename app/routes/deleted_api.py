@@ -33,7 +33,9 @@ def register_deleted_api_routes(app):
                 "season": row["season"],
                 "thickness": row["thickness"],
                 "deleted_at": row["deleted_at"],
-                "attribute_names": json.loads(row["attributes_json"]) if row["attributes_json"] else []
+                "attribute_names": json.loads(row["attributes_json"]) if row["attributes_json"] else [],
+                "occasion_tags": json.loads(row["occasion_tags_json"]) if row["occasion_tags_json"] else [],
+                "role": row["role"]
             })
 
         return jsonify({"items": items})
@@ -57,8 +59,8 @@ def register_deleted_api_routes(app):
             INSERT INTO clothes (
                 user_id, filename, image_relpath, feature_relpath,
                 category_name, category_conf, main_category,
-                season, thickness, attributes_json
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                season, thickness, attributes_json, occasion_tags_json, role
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             row["user_id"],
             row["filename"],
@@ -69,7 +71,9 @@ def register_deleted_api_routes(app):
             row["main_category"],
             row["season"],
             row["thickness"],
-            row["attributes_json"]
+            row["attributes_json"],
+            row["occasion_tags_json"],
+            row["role"]
         ))
 
         restored_id = cur.lastrowid

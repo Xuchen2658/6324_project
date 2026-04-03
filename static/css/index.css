@@ -92,6 +92,54 @@ select {
     margin-top: 0;
 }
 
+.occasion-box {
+    background: #fff7e6;
+    border: 1px solid #ffe7ba;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 24px;
+}
+
+.outfit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 14px;
+}
+
+.outfit-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.outfit-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.outfit-item {
+    text-align: center;
+}
+
+.outfit-item img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.reason-list {
+    margin-top: 8px;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
 @media (max-width: 900px) {
     .dashboard,
     .grid {

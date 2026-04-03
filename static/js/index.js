@@ -21,6 +21,11 @@ const app = createApp({
         const searchPreview = ref('');
         const searchResult = ref(null);
 
+        const selectedOccasion = ref("Daily");
+        const occasionOptions = ref(["Daily", "Work", "Sport", "Party", "Formal", "Travel", "Home"]);
+        const occasionItems = ref([]);
+        const outfitRecommendations = ref([]);
+
         const messages = {
             zh: {
                 currentUser: '当前用户',
@@ -62,7 +67,15 @@ const app = createApp({
                 noSimilarInWardrobe: '当前衣橱库为空，或没有可比较的衣物。',
                 batchUpload: '批量上传',
                 batchUploadDone: '批量上传完成',
-                recentDeleted: '最近删除'
+                recentDeleted: '最近删除',
+                occasion: '场合',
+                occasionRecommend: '按场合推荐',
+                smartOutfits: '智能搭配推荐',
+                refreshOccasionRecommend: '获取推荐',
+                noOccasionItems: '当前衣橱中没有适合该场合的单品推荐',
+                noOutfits: '当前衣橱中暂时无法生成该场合的搭配',
+                outfitScore: '搭配分数',
+                reasons: '推荐理由'
             },
             en: {
                 currentUser: 'Current User',
@@ -104,133 +117,15 @@ const app = createApp({
                 noSimilarInWardrobe: 'Wardrobe is empty or no comparable items found.',
                 batchUpload: 'Batch Upload',
                 batchUploadDone: 'Batch upload finished',
-                recentDeleted: 'Recently Deleted'
-            },
-            es: {
-                currentUser: 'Usuario actual',
-                viewWardrobe: 'Ver armario',
-                logout: 'Cerrar sesión',
-                todayWeather: 'Clima de hoy',
-                refreshWeather: 'Actualizar clima',
-                city: 'Ciudad',
-                cityLabel: 'Ciudad',
-                changeLanguage: 'Idioma',
-                temperature: 'Temperatura',
-                feelsLike: 'Sensación térmica',
-                tempMax: 'Temperatura máxima',
-                tempMin: 'Temperatura mínima',
-                rainProb: 'Probabilidad de lluvia',
-                noWeather: 'No hay información meteorológica',
-                todayRecommendedClothes: 'Ropa recomendada para hoy',
-                score: 'Puntuación',
-                noTodayRecommendation: 'No hay ropa recomendada para hoy',
-                searchByCategory: 'Buscar ropa por categoría',
-                searchPlaceholder: 'Introduce una categoría, por ejemplo hoodie / shirt / skirt',
-                search: 'Buscar',
-                noSearchResult: 'No se encontró ropa de esta categoría',
-                storeUpload: 'Subir al armario',
-                storeUploadDesc: 'La imagen se guardará en el armario del usuario actual y participará en búsquedas futuras.',
-                uploadAndStore: 'Subir y guardar',
-                recognitionResult: 'Resultado del reconocimiento',
-                category: 'Categoría',
-                confidence: 'Confianza',
-                season: 'Temporada',
-                thickness: 'Grosor',
-                mostSimilarAfterStore: 'Prendas más similares después de guardar',
-                similarity: 'Similitud',
-                findSimilar: 'Buscar similares',
-                findSimilarDesc: 'Sube una imagen sin guardarla y busca las prendas más similares en el armario actual.',
-                searchOnly: 'Buscar similares',
-                queryRecognition: 'Resultado de la imagen consultada',
-                wardrobeSimilarItems: 'Prendas similares en el armario',
-                noSimilarInWardrobe: 'El armario está vacío o no hay prendas comparables.',
-                batchUpload: 'Carga múltiple',
-                batchUploadDone: 'Carga múltiple finalizada',
-                recentDeleted: 'Eliminados recientemente'
-            },
-            ja: {
-                currentUser: '現在のユーザー',
-                viewWardrobe: 'クローゼットを見る',
-                logout: 'ログアウト',
-                todayWeather: '今日の天気',
-                refreshWeather: '天気を更新',
-                city: '都市',
-                cityLabel: '都市',
-                changeLanguage: '言語',
-                temperature: '現在の気温',
-                feelsLike: '体感温度',
-                tempMax: '最高気温',
-                tempMin: '最低気温',
-                rainProb: '降水確率',
-                noWeather: '天気情報が取得できません',
-                todayRecommendedClothes: '今日おすすめの服',
-                score: 'スコア',
-                noTodayRecommendation: '今日のおすすめ衣類はありません',
-                searchByCategory: 'カテゴリで服を検索',
-                searchPlaceholder: 'カテゴリを入力してください。例：hoodie / shirt / skirt',
-                search: '検索',
-                noSearchResult: 'このカテゴリの服は見つかりませんでした',
-                storeUpload: 'クローゼットに保存',
-                storeUploadDesc: 'アップロード後、現在のアカウントのクローゼットに保存され、今後の類似検索に使用されます。',
-                uploadAndStore: 'アップロードして保存',
-                recognitionResult: '認識結果',
-                category: 'カテゴリ',
-                confidence: '信頼度',
-                season: '季節',
-                thickness: '厚さ',
-                mostSimilarAfterStore: '保存後に最も類似した服',
-                similarity: '類似度',
-                findSimilar: '類似を探す',
-                findSimilarDesc: '画像を保存せずにアップロードし、現在のクローゼット内で最も似た服を検索します。',
-                searchOnly: '類似を探す',
-                queryRecognition: '検索画像の認識結果',
-                wardrobeSimilarItems: 'クローゼット内の類似服',
-                noSimilarInWardrobe: 'クローゼットが空か、比較できる服がありません。',
-                batchUpload: '一括アップロード',
-                batchUploadDone: '一括アップロードが完了しました',
-                recentDeleted: '最近削除したアイテム'
-            },
-            ko: {
-                currentUser: '현재 사용자',
-                viewWardrobe: '옷장 보기',
-                logout: '로그아웃',
-                todayWeather: '오늘의 날씨',
-                refreshWeather: '날씨 새로고침',
-                city: '도시',
-                cityLabel: '도시',
-                changeLanguage: '언어',
-                temperature: '현재 기온',
-                feelsLike: '체감 온도',
-                tempMax: '최고 기온',
-                tempMin: '최저 기온',
-                rainProb: '강수 확률',
-                noWeather: '날씨 정보를 불러올 수 없습니다',
-                todayRecommendedClothes: '오늘 입기 좋은 옷',
-                score: '점수',
-                noTodayRecommendation: '오늘 추천할 옷이 없습니다',
-                searchByCategory: '카테고리로 옷 검색',
-                searchPlaceholder: '카테고리를 입력하세요. 예: hoodie / shirt / skirt',
-                search: '검색',
-                noSearchResult: '해당 카테고리의 옷을 찾지 못했습니다',
-                storeUpload: '옷장에 저장',
-                storeUploadDesc: '업로드한 이미지는 현재 계정의 옷장에 저장되며 이후 유사 검색에 사용됩니다.',
-                uploadAndStore: '업로드 후 저장',
-                recognitionResult: '인식 결과',
-                category: '카테고리',
-                confidence: '신뢰도',
-                season: '계절',
-                thickness: '두께',
-                mostSimilarAfterStore: '저장 후 가장 유사한 옷',
-                similarity: '유사도',
-                findSimilar: '유사 항목 찾기',
-                findSimilarDesc: '이미지를 저장하지 않고 업로드하여 현재 옷장에서 가장 비슷한 옷을 찾습니다.',
-                searchOnly: '유사 항목 찾기',
-                queryRecognition: '조회 이미지 인식 결과',
-                wardrobeSimilarItems: '옷장 내 유사한 옷',
-                noSimilarInWardrobe: '옷장이 비어 있거나 비교 가능한 옷이 없습니다.',
-                batchUpload: '일괄 업로드',
-                batchUploadDone: '일괄 업로드 완료',
-                recentDeleted: '최근 삭제'
+                recentDeleted: 'Recently Deleted',
+                occasion: 'Occasion',
+                occasionRecommend: 'Occasion Recommendations',
+                smartOutfits: 'Smart Outfit Suggestions',
+                refreshOccasionRecommend: 'Get Recommendations',
+                noOccasionItems: 'No item recommendations for this occasion',
+                noOutfits: 'No outfit combinations available for this occasion',
+                outfitScore: 'Outfit Score',
+                reasons: 'Reasons'
             }
         };
 
@@ -241,7 +136,24 @@ const app = createApp({
                 const data = await getJSON(`/api/dashboard?city=${encodeURIComponent(city.value)}`);
                 dashboard.value = data || {};
                 cityOptions.value = data.city_options || [];
+                occasionOptions.value = data.occasion_options || occasionOptions.value;
                 if (data.city) city.value = data.city;
+            } catch (err) {
+                alert(err.message);
+            }
+        };
+
+        const loadOccasionRecommendations = async () => {
+            try {
+                const itemData = await getJSON(
+                    `/api/recommend_by_occasion?occasion=${encodeURIComponent(selectedOccasion.value)}&city=${encodeURIComponent(city.value)}`
+                );
+                occasionItems.value = itemData.recommended_items || [];
+
+                const outfitData = await getJSON(
+                    `/api/recommend_outfits?occasion=${encodeURIComponent(selectedOccasion.value)}&city=${encodeURIComponent(city.value)}`
+                );
+                outfitRecommendations.value = outfitData.outfits || [];
             } catch (err) {
                 alert(err.message);
             }
@@ -297,6 +209,7 @@ const app = createApp({
                 const data = await postForm('/upload_store', fd);
                 storeResult.value = data;
                 await loadDashboard();
+                await loadOccasionRecommendations();
             } catch (err) {
                 alert(err.message);
             }
@@ -314,6 +227,7 @@ const app = createApp({
                 const data = await postForm('/upload_store_batch', fd);
                 alert(`${t.value.batchUploadDone}: ${data.stored_count}`);
                 await loadDashboard();
+                await loadOccasionRecommendations();
             } catch (err) {
                 alert(err.message);
             }
@@ -354,6 +268,7 @@ const app = createApp({
 
         onMounted(async () => {
             await loadDashboard();
+            await loadOccasionRecommendations();
         });
 
         return {
@@ -370,8 +285,13 @@ const app = createApp({
             storeResult,
             searchPreview,
             searchResult,
+            selectedOccasion,
+            occasionOptions,
+            occasionItems,
+            outfitRecommendations,
             changeLanguage,
             loadDashboard,
+            loadOccasionRecommendations,
             searchClothes,
             onStoreFileChange,
             onSearchFileChange,

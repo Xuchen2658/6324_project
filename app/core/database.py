@@ -9,6 +9,13 @@ def get_db():
     return conn
 
 
+def ensure_column(conn, table_name: str, column_name: str, column_def: str):
+    cols = conn.execute(f"PRAGMA table_info({table_name})").fetchall()
+    existing = {col["name"] for col in cols}
+    if column_name not in existing:
+        conn.execute(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_def}")
+
+
 def init_db():
     conn = get_db()
     cur = conn.cursor()
@@ -56,6 +63,12 @@ def init_db():
             deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
+    # 新增字段，兼容老数据库
+    ensure_column(conn, "clothes", "occasion_tags_json", "TEXT")
+    ensure_column(conn, "clothes", "role", "TEXT")
+    ensure_column(conn, "deleted_clothes", "occasion_tags_json", "TEXT")
+    ensure_column(conn, "deleted_clothes", "role", "TEXT")
 
     conn.commit()
     conn.close()
