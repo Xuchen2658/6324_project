@@ -63,7 +63,6 @@
                     <div class="sim-card" v-for="item in dashboard.today_recommendations" :key="item.id">
                         <img :src="item.image_url" />
                         <div><strong>[[ item.category_name ]]</strong></div>
-                        <div class="muted">[[ item.color_name || '' ]]</div>
                         <div class="muted">[[ t.score ]]: [[ item.score ]]</div>
                         <div class="muted">[[ item.reasons ? item.reasons.join(' / ') : '' ]]</div>
                     </div>
@@ -89,7 +88,6 @@
                     <div class="sim-card" v-for="item in occasionItems" :key="item.id">
                         <img :src="item.image_url" />
                         <div><strong>[[ item.category_name ]]</strong></div>
-                        <div class="muted">[[ item.color_name || '' ]]</div>
                         <div class="muted">[[ t.score ]]: [[ item.score ]]</div>
                         <div class="muted">[[ item.reasons ? item.reasons.join(' / ') : '' ]]</div>
                     </div>
@@ -108,7 +106,6 @@
                                 <img :src="piece.image_url" />
                                 <div class="muted">[[ piece.role ]]</div>
                                 <div><strong>[[ piece.category_name ]]</strong></div>
-                                <div class="muted">[[ piece.color_name || '' ]]</div>
                             </div>
                         </div>
 
@@ -134,7 +131,6 @@
                     <div class="sim-card" v-for="item in searchResults" :key="item.id">
                         <img :src="item.image_url" />
                         <div><strong>[[ item.category_name ]]</strong></div>
-                        <div class="muted">[[ item.color_name || '' ]]</div>
                         <div class="muted">[[ item.main_category || 'Others' ]]</div>
                     </div>
                 </div>
@@ -148,15 +144,13 @@
                 <div class="muted">[[ t.storeUploadDesc ]]</div>
                 <input type="file" multiple @change="onStoreFileChange" accept="image/*" />
                 <div class="inline-row" style="margin-top: 10px;">
-                    <button @click="uploadStore">[[ t.uploadAndStore ]]</button>
-                    <button class="success" @click="uploadStoreBatch">[[ t.batchUpload ]]</button>
+                    <button @click="submitStore">[[ t.submit ]]</button>
                 </div>
 
                 <img v-if="storePreview" :src="storePreview" class="preview" />
 
                 <div class="section" v-if="storeResult">
                     <h4>[[ t.recognitionResult ]]</h4>
-                    <div>颜色: [[ storeResult.stored_item.color_name || 'Unknown' ]]</div>
                     <div>[[ t.category ]]: [[ storeResult.stored_item.category_name ]]</div>
                     <div>[[ t.confidence ]]: [[ storeResult.stored_item.category_conf ]]</div>
                     <div>[[ t.category ]]: [[ storeResult.stored_item.main_category || 'Others' ]]</div>
@@ -173,7 +167,6 @@
                         <div class="sim-card" v-for="item in storeResult.similar_items" :key="item.id">
                             <img :src="item.image_url" />
                             <div>[[ item.category_name ]]</div>
-                            <div class="muted">[[ item.color_name || '' ]]</div>
                             <div class="muted">[[ t.similarity ]]: [[ item.score ]]</div>
                         </div>
                     </div>
@@ -190,7 +183,6 @@
 
                 <div class="section" v-if="searchResult">
                     <h4>[[ t.queryRecognition ]]</h4>
-                    <div>颜色: [[ searchResult.query_result.color_name || 'Unknown' ]]</div>
                     <div>[[ t.category ]]: [[ searchResult.query_result.category_name ]]</div>
                     <div>[[ t.confidence ]]: [[ searchResult.query_result.category_conf ]]</div>
                     <div>[[ t.category ]]: [[ searchResult.query_result.main_category || 'Others' ]]</div>
@@ -207,7 +199,6 @@
                         <div class="sim-card" v-for="item in searchResult.similar_items" :key="item.id">
                             <img :src="item.image_url" />
                             <div>[[ item.category_name ]]</div>
-                            <div class="muted">[[ item.color_name || '' ]]</div>
                             <div class="muted">[[ t.similarity ]]: [[ item.score ]]</div>
                         </div>
                     </div>

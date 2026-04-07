@@ -1,67 +1,85 @@
 # 🧠 AI Smart Wardrobe System
 
-A **Flask + PyTorch + YOLO + multi-model fusion** based intelligent wardrobe system that provides:
+An intelligent wardrobe system built with **Flask + PyTorch + YOLO + multi-model fusion**, designed to provide:
 
-* 👕 Clothing recognition (category + attributes + color)
-* 📊 Wardrobe management (filter / search / sorting)
-* 🌦 Weather-aware recommendations
-* 🎯 Occasion-based recommendations (Work / Travel / Sport, etc.)
-* 👗 Intelligent outfit generation (Top + Bottom / Dress / Layered outfits)
+* Clothing recognition (category + attributes + color)
+* Wardrobe management (filtering / search / sorting)
+* Weather-aware recommendations
+* Occasion-based recommendations
+* Intelligent outfit generation
+* Full Chinese / English interface switching
 
 ---
 
 # 🚀 Key Features
 
-## 🧠 Dual-Model Fusion (Core Architecture)
+## 1. Dual-Model Fusion
 
-This system uses **two models collaboratively**:
+The system uses **two models collaboratively**:
 
-| Model                         | Responsibility                                       |
-| ----------------------------- | ---------------------------------------------------- |
-| ✅ Legacy Model (ResNet50)     | Clothing category classification + feature embedding |
-| ✅ New Model (YOLO + ConvNeXt) | Color detection + fine-grained attributes            |
+| Model                       | Responsibility                                              |
+| --------------------------- | ----------------------------------------------------------- |
+| Legacy Model (ResNet50)     | Stable clothing category classification + feature embedding |
+| New Model (YOLO + ConvNeXt) | Color detection + fine-grained attribute prediction         |
 
-### Benefits:
+### Benefits
 
-* Stable category prediction (no more incorrect outputs like *“Sateen”*)
-* Rich attribute understanding (color, pattern, sleeve type, etc.)
-
----
-
-## 🎨 Advanced Color Detection
-
-* YOLO-based human segmentation
-* HSV color space analysis
-* Multi-region detection (upper/lower body)
-* KMeans color feature extraction
-
-### Improvements:
-
-* ✅ Better beige vs white distinction
-* ✅ Reduced red vs pink confusion
-* ✅ Skin-color interference removed
+* Stable clothing categories
+* Richer attributes
+* Better color recognition
+* Preserves similarity search performance
 
 ---
 
-## 👗 Intelligent Outfit Recommendation
+## 2. Clothing Recognition
 
-Automatically generates outfit combinations:
+Each uploaded clothing item is automatically analyzed and stored with:
 
-```text
-Top + Bottom
-Dress
-Top + Bottom + Outerwear
-```
+* `category_name`
+* `main_category`
+* `attribute_names`
+* `color_name`
+* `season`
+* `thickness`
+* `feature`
 
-### Supports:
+The system supports both:
 
-* Layered outfits
-* Single-piece outfits
-* Daily practical combinations
+* Single image upload
+* Multiple image upload
 
 ---
 
-## 🎯 Occasion-Based Recommendation
+## 3. Advanced Color Detection
+
+The updated color recognition module includes:
+
+* YOLO-based segmentation
+* HSV color analysis
+* Multi-region color detection
+* Skin filtering
+* Extended hue coverage across the color wheel
+* Better distinction among beige, white, brown, pink, and red
+
+---
+
+## 4. Weather-Aware Recommendation
+
+The system uses weather data to recommend suitable clothes based on:
+
+* Current temperature
+* Apparent temperature
+* Daily maximum and minimum temperature
+* Rain probability
+
+### Supported display features
+
+* Celsius / Fahrenheit conversion button
+* Dynamic temperature display switching in the weather module
+
+---
+
+## 5. Occasion-Based Recommendation
 
 Supported occasions:
 
@@ -73,92 +91,105 @@ Supported occasions:
 * Travel
 * Home
 
-### Logic:
+Each item is scored according to:
 
-* Matches `occasion_tags`
-* Uses clothing `role` (Top / Bottom / Dress / Outerwear)
-* Category keyword-based scoring
-
----
-
-## 🌦 Weather-Aware Recommendation
-
-Powered by Open-Meteo API:
-
-* Temperature
-* Apparent temperature
-* Precipitation probability
-
-### Behavior:
-
-* Cold → recommend thick clothing
-* Hot → recommend light clothing
-* Rain → recommend outerwear / dark colors
+* Occasion matching
+* Clothing category
+* Clothing role
+* Weather suitability
+* Thickness / season compatibility
 
 ---
 
-## ⚡ Weather Cache Optimization
+## 6. Intelligent Outfit Recommendation
 
-* Weather is cached for **10 minutes per city**
-* Prevents excessive API calls
+The system automatically generates outfit combinations such as:
 
-### Fixes:
+```text
+Top + Bottom
+Dress
+Top + Bottom + Outerwear
+```
 
-* ❌ 502 errors
-* ❌ Timeout issues
-* ❌ Slow response
+### Rule-based outfit logic includes:
+
+* Role grouping (`Top`, `Bottom`, `Dress`, `Outerwear`, `Shoes`)
+* Occasion scoring
+* Color harmony rules
+* Temperature / layering rules
+* Cloth type constraints (`single_piece` / `two_piece`)
+* Conflict penalties for unsuitable combinations
+
+---
+
+## 7. Full Bilingual Interface
+
+The system now supports **fully synchronized Chinese and English display**.
+
+### This includes:
+
+* UI labels
+* Clothing category names
+* Main categories
+* Roles
+* Attributes
+* Color names
+* Occasion names
+* Recommendation reasons
+
+### Result
+
+* Chinese page displays all content in Chinese
+* English page displays all content in English
+
+---
+
+## 8. Weather Cache Optimization
+
+To reduce repeated API requests and prevent timeout errors:
+
+* Weather is cached for 10 minutes per city
+* Cached results are reused for repeated recommendations
+* Fallback to old cached data when API fails
+
+### Fixes
+
+* 502 Bad Gateway errors
+* Timeout issues
+* Slow recommendation refresh
 
 ---
 
 # 🧩 System Features
 
-## 👤 User System
+## User System
 
-* Register / Login / Logout
+* Register
+* Login
+* Logout
 * Multi-user isolation
 
----
-
-## 👕 Clothing Management
+## Clothing Management
 
 * Single upload
 * Batch upload
+* Delete
 * Batch delete
-* Recently deleted (Recycle Bin)
-* Restore items
+* Recently deleted
+* Restore deleted items
 
----
+## Wardrobe Features
 
-## 🧥 Wardrobe Features
-
-* View all items
-* Category filtering (Tops / Pants / Skirts / Shoes, etc.)
+* View all clothes
+* Category filtering
 * Keyword search
-* Sorting (Newest / Oldest)
+* Sort by newest / oldest
 
----
+## Recommendation Features
 
-## 🤖 AI Recognition Output
-
-Each clothing item includes:
-
-* `category_name`
-* `main_category`
-* `attribute_names`
-* `color_name`
-* `season`
-* `thickness`
-* `feature` (for similarity search)
-
----
-
-## 👗 Recommendation Fields
-
-Additional attributes for recommendation:
-
-* `occasion_tags`
-* `role` (Top / Bottom / Dress / Outerwear / Shoes)
-* `cloth_type` (single / two_piece)
+* Weather-aware recommendation
+* Occasion-based recommendation
+* Intelligent outfit recommendation
 
 ---
 
@@ -187,45 +218,44 @@ smart-wardrobe/
 │   │   └── deleted_api.py
 │
 ├── templates/
-├── static/uploads/
+├── static/
+│   ├── js/
+│   ├── css/
+│   └── uploads/
+│
 ├── dataset/Anno_coarse/
 │
 ├── checkpoint_c2_full_1000.pth
 ├── model0405.pth
 ├── yolov8n-seg.pt
+└── backfill_occasion_role.py
 ```
 
 ---
 
 # ⚙️ Installation & Setup
 
-## 1️⃣ Create Virtual Environment
+## 1. Create virtual environment
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 ```
 
----
-
-## 2️⃣ Install Dependencies
+## 2. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 pip install ultralytics opencv-python scikit-learn
 ```
 
----
-
-## 3️⃣ Run the Application
+## 3. Run the project
 
 ```bash
 python backend.py
 ```
 
----
-
-## 4️⃣ Open in Browser
+## 4. Open in browser
 
 ```text
 http://127.0.0.1:5000
@@ -233,76 +263,95 @@ http://127.0.0.1:5000
 
 ---
 
-# 🧠 Recommendation System
+# 🧠 Recommendation Logic
 
-## Item Scoring
+## Item Recommendation
 
-Based on:
+Each clothing item is scored based on:
 
-* Occasion matching (+4)
-* Category rules (+1~3)
-* Weather compatibility (+2~3)
+* Occasion match
+* Category suitability
+* Weather compatibility
+* Season and thickness match
+
+## Outfit Recommendation
+
+Outfits are generated using rule-based templates and ranking:
+
+* Top + Bottom
+* Dress
+* Top + Bottom + Outerwear
+
+Additional scoring includes:
+
+* Color compatibility
+* Layering suitability
+* Cloth type consistency
+* Occasion conflict penalties
 
 ---
 
-## Outfit Generation
+# 🌐 Language Support
 
-Steps:
+The system supports both:
 
-1. Group items by `role`
-2. Rank by score
-3. Generate combinations:
+* Chinese
+* English
 
-```text
-Top + Bottom
-Dress
-Top + Bottom + Outerwear
-```
+All displayed content is translated consistently, including recommendation reasons.
 
 ---
 
-# ⚠️ Troubleshooting
+# 🌡 Temperature Unit Switch
 
-## ❌ Recommendation score = 0
+The weather module supports:
 
-Cause:
+* Celsius (°C)
+* Fahrenheit (°F)
 
-* Missing `occasion_tags` or `role`
+Users can switch units directly from the homepage weather panel without changing backend data.
 
-Fix:
+---
+
+# ⚠️ Common Issues
+
+## Recommendation score is 0
+
+Run:
 
 ```bash
 python backfill_occasion_role.py
 ```
 
----
+This restores:
 
-## ❌ Weather API errors
+* `occasion_tags`
+* `role`
 
-Fixed:
+## Weather API timeout or 502 error
 
-* Parameter issues
-* Excessive requests
-* Timeout handling
+The system now uses:
 
----
+* correct weather API parameters
+* request timeout control
+* 10-minute cache fallback
 
-## ❌ Wrong category prediction
+## Wrong category prediction
 
-Solution:
+The system solves this by:
 
-* Legacy model handles classification
-* New model only handles attributes
+* using the legacy model for category classification
+* using the new model only for color and detailed attributes
 
 ---
 
 # 📌 Future Improvements
 
-* Outfit similarity recommendation
-* Save outfit combinations
+* Saved outfit collections
 * User preference learning
-* Explainable recommendation
-* Multi-language UI (EN / CN / JP / KR)
+* Explainable recommendation details
+* More fine-grained fashion style classification
+* More language options
 
 ---
 
@@ -314,7 +363,7 @@ Solution:
 * ConvNeXt
 * OpenCV
 * SQLite
-* Vue (Frontend)
+* Vue
 
 ---
 

@@ -33,33 +33,54 @@ INVALID_ATTRIBUTE_WORDS = {
 
 # ==================== 2. 颜色区间（使用你新版本） ====================
 COLOR_RANGES = [
-    {"name": "red", "lower": [0, 40, 30], "upper": [20, 255, 255], "priority": 1},
-    {"name": "red", "lower": [150, 40, 30], "upper": [180, 255, 255], "priority": 1},
+    # ==================== 红色 Red ====================
+    {"name": "red", "lower": [0, 50, 35], "upper": [10, 255, 255], "priority": 1},
+    {"name": "red", "lower": [170, 50, 35], "upper": [180, 255, 255], "priority": 1},
 
-    {"name": "pink", "lower": [0, 30, 170], "upper": [15, 110, 255], "priority": 2},
-    {"name": "pink", "lower": [165, 30, 170], "upper": [180, 110, 255], "priority": 2},
+    # ==================== 粉色 Pink ====================
+    {"name": "pink", "lower": [160, 20, 170], "upper": [175, 120, 255], "priority": 2},
+    {"name": "pink", "lower": [0, 20, 170], "upper": [10, 120, 255], "priority": 2},
 
-    {"name": "blue", "lower": [100, 40, 40], "upper": [135, 255, 255], "priority": 3},
+    # ==================== 橙色 Orange ====================
+    {"name": "orange", "lower": [10, 70, 80], "upper": [22, 255, 255], "priority": 3},
 
-    {"name": "yellow", "lower": [20, 60, 150], "upper": [40, 255, 255], "priority": 4},
+    # ==================== 黄色 Yellow ====================
+    {"name": "yellow", "lower": [22, 70, 120], "upper": [35, 255, 255], "priority": 4},
 
-    {"name": "green", "lower": [35, 40, 40], "upper": [85, 255, 255], "priority": 5},
+    # ==================== 黄绿色 Lime ====================
+    {"name": "lime", "lower": [35, 50, 80], "upper": [48, 255, 255], "priority": 5},
 
-    {"name": "purple", "lower": [120, 40, 40], "upper": [155, 255, 255], "priority": 6},
+    # ==================== 绿色 Green ====================
+    {"name": "green", "lower": [48, 45, 45], "upper": [85, 255, 255], "priority": 6},
 
-    {"name": "orange", "lower": [10, 60, 100], "upper": [25, 255, 255], "priority": 7},
+    # ==================== 青绿色 Cyan/Teal ====================
+    {"name": "cyan", "lower": [85, 40, 50], "upper": [100, 255, 255], "priority": 7},
 
-    {"name": "brown", "lower": [10, 60, 60], "upper": [30, 255, 150], "priority": 8},
+    # ==================== 蓝色 Blue ====================
+    {"name": "blue", "lower": [100, 45, 40], "upper": [130, 255, 255], "priority": 8},
 
-    {"name": "beige", "lower": [10, 18, 145], "upper": [50, 100, 255], "priority": 8},
+    # ==================== 靛蓝 Indigo ====================
+    {"name": "indigo", "lower": [130, 40, 35], "upper": [145, 255, 255], "priority": 9},
 
-    {"name": "white", "lower": [0, 0, 160], "upper": [180, 20, 255], "priority": 11},
+    # ==================== 紫色 Purple ====================
+    {"name": "purple", "lower": [145, 35, 40], "upper": [160, 255, 255], "priority": 10},
 
-    {"name": "gray", "lower": [0, 0, 60], "upper": [180, 18, 159], "priority": 12},
+    # ==================== 棕色 Brown ====================
+    {"name": "brown", "lower": [5, 55, 25], "upper": [20, 255, 180], "priority": 11},
+    {"name": "brown", "lower": [10, 80, 20], "upper": [30, 255, 150], "priority": 11},
 
-    {"name": "black", "lower": [0, 0, 0], "upper": [180, 255, 50], "priority": 12},
+    # ==================== 米色 Beige ====================
+    {"name": "beige", "lower": [10, 15, 150], "upper": [40, 110, 255], "priority": 12},
+
+    # ==================== 白色 White ====================
+    {"name": "white", "lower": [0, 0, 185], "upper": [180, 22, 255], "priority": 13},
+
+    # ==================== 灰色 Gray ====================
+    {"name": "gray", "lower": [0, 0, 55], "upper": [180, 25, 184], "priority": 14},
+
+    # ==================== 黑色 Black ====================
+    {"name": "black", "lower": [0, 0, 0], "upper": [180, 255, 54], "priority": 15},
 ]
-
 
 # ==================== 3. 模型定义 ====================
 class FinalClothingModel(nn.Module):
@@ -210,15 +231,18 @@ def _are_similar_colors(name1, name2):
 
     similar_groups = [
         {"white", "gray", "beige"},
-        {"pink", "red"},
-        {"black", "gray"}
+        {"pink", "red", "purple"},
+        {"orange", "yellow", "brown"},
+        {"lime", "green"},
+        {"cyan", "blue", "indigo"},
+        {"black", "gray", "brown"},
     ]
+
     for group in similar_groups:
         if name1 in group and name2 in group:
             return True
 
     return False
-
 
 def _extract_kmeans_feature(img_np, clothing_mask):
     try:

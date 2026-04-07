@@ -48,9 +48,9 @@ const app = createApp({
                 searchPlaceholder: '输入类别，例如 hoodie / shirt / skirt',
                 search: '搜索',
                 noSearchResult: '没有找到该类别衣物',
-                storeUpload: '入库上传',
-                storeUploadDesc: '上传后保存到当前账号衣橱库，并参与后续相似检索。',
-                uploadAndStore: '上传并入库',
+                storeUpload: '上传衣物',
+                storeUploadDesc: '选择单张或多张图片后，点击提交直接上传到当前账号衣橱库，并参与后续相似检索。',
+                submit: '提交',
                 recognitionResult: '识别结果',
                 category: '类别',
                 confidence: '置信度',
@@ -65,8 +65,7 @@ const app = createApp({
                 queryRecognition: '查询图识别结果',
                 wardrobeSimilarItems: '库内相似衣物',
                 noSimilarInWardrobe: '当前衣橱库为空，或没有可比较的衣物。',
-                batchUpload: '批量上传',
-                batchUploadDone: '批量上传完成',
+                uploadDone: '上传完成',
                 recentDeleted: '最近删除',
                 occasion: '场合',
                 occasionRecommend: '按场合推荐',
@@ -99,9 +98,9 @@ const app = createApp({
                 searchPlaceholder: 'Enter category, e.g. hoodie / shirt / skirt',
                 search: 'Search',
                 noSearchResult: 'No clothes found in this category',
-                storeUpload: 'Store Upload',
-                storeUploadDesc: 'Upload and save to current user wardrobe for future similarity search.',
-                uploadAndStore: 'Upload and Store',
+                storeUpload: 'Upload Clothes',
+                storeUploadDesc: 'Select one or multiple images, then click Submit to upload directly to the current wardrobe.',
+                submit: 'Submit',
                 recognitionResult: 'Recognition Result',
                 category: 'Category',
                 confidence: 'Confidence',
@@ -115,8 +114,7 @@ const app = createApp({
                 queryRecognition: 'Query Recognition',
                 wardrobeSimilarItems: 'Similar Items in Wardrobe',
                 noSimilarInWardrobe: 'Wardrobe is empty or no comparable items found.',
-                batchUpload: 'Batch Upload',
-                batchUploadDone: 'Batch upload finished',
+                uploadDone: 'Upload completed',
                 recentDeleted: 'Recently Deleted',
                 occasion: 'Occasion',
                 occasionRecommend: 'Occasion Recommendations',
@@ -197,35 +195,27 @@ const app = createApp({
             searchPreview.value = file ? URL.createObjectURL(file) : '';
         };
 
-        const uploadStore = async () => {
-            if (!storeFile.value) {
-                alert('Please choose an image');
-                return;
-            }
-
-            try {
-                const fd = new FormData();
-                fd.append('file', storeFile.value);
-                const data = await postForm('/upload_store', fd);
-                storeResult.value = data;
-                await loadDashboard();
-                await loadOccasionRecommendations();
-            } catch (err) {
-                alert(err.message);
-            }
-        };
-
-        const uploadStoreBatch = async () => {
+        // 合并单张上传和批量上传
+        const submitStore = async () => {
             if (!storeFiles.value.length) {
-                alert('Please choose files');
+                alert('Please choose image files');
                 return;
             }
 
             try {
                 const fd = new FormData();
-                storeFiles.value.forEach(file => fd.append('files', file));
-                const data = await postForm('/upload_store_batch', fd);
-                alert(`${t.value.batchUploadDone}: ${data.stored_count}`);
+
+                if (storeFiles.value.length === 1) {
+                    fd.append('file', storeFiles.value[0]);
+                    const data = await postForm('/upload_store', fd);
+                    storeResult.value = data;
+                } else {
+                    storeFiles.value.forEach(file => fd.append('files', file));
+                    const data = await postForm('/upload_store_batch', fd);
+                    storeResult.value = null;
+                    alert(`${t.value.uploadDone}: ${data.stored_count}`);
+                }
+
                 await loadDashboard();
                 await loadOccasionRecommendations();
             } catch (err) {
@@ -295,8 +285,7 @@ const app = createApp({
             searchClothes,
             onStoreFileChange,
             onSearchFileChange,
-            uploadStore,
-            uploadStoreBatch,
+            submitStore,
             searchSimilar,
             formatWeatherValue,
             goWardrobe,

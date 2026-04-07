@@ -27,9 +27,6 @@
             <select v-model="language" @change="changeLanguage" style="background:#fff; color:#333;">
                 <option value="zh">中文</option>
                 <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="ja">日本語</option>
-                <option value="ko">한국어</option>
             </select>
 
             <button @click="goRecentDeleted">[[ t.recentDeleted ]]</button>
@@ -64,7 +61,7 @@
 
             <div class="inline-row">
                 <input type="file" multiple @change="onBatchFileChange" accept="image/*" />
-                <button class="success" @click="uploadBatch">[[ t.batchUpload ]]</button>
+                <button class="success" @click="uploadBatch">[[ t.submit ]]</button>
                 <button @click="toggleSelectAll">[[ allSelected ? t.unselectAll : t.selectAll ]]</button>
                 <button class="danger" @click="batchDelete">[[ t.batchDelete ]]</button>
                 <span class="muted">[[ t.selectedCount ]]: [[ selectedIds.length ]]</span>
