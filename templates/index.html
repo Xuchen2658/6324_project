@@ -44,6 +44,7 @@
                         <option v-for="c in cityOptions" :key="c" :value="c">[[ c ]]</option>
                     </select>
                     <button class="small-btn" @click="loadDashboard">[[ t.refreshWeather ]]</button>
+                    <button class="small-btn" @click="toggleTempUnit">[[ tempUnit === 'C' ? '°C' : '°F' ]]</button>
                 </div>
 
                 <div class="section" v-if="dashboard.weather">
@@ -62,7 +63,7 @@
                 <div v-if="dashboard.today_recommendations && dashboard.today_recommendations.length" class="sim-grid">
                     <div class="sim-card" v-for="item in dashboard.today_recommendations" :key="item.id">
                         <img :src="item.image_url" />
-                        <div><strong>[[ item.category_name ]]</strong></div>
+                        <div><strong>[[ displayCategory(item.category_name) ]]</strong></div>
                         <div class="muted">[[ t.score ]]: [[ item.score ]]</div>
                         <div class="muted">[[ item.reasons ? item.reasons.join(' / ') : '' ]]</div>
                     </div>
@@ -77,7 +78,7 @@
             <div class="inline-row">
                 <span class="muted">[[ t.occasion ]]:</span>
                 <select v-model="selectedOccasion">
-                    <option v-for="o in occasionOptions" :key="o" :value="o">[[ o ]]</option>
+                    <option v-for="o in occasionOptions" :key="o" :value="o">[[ displayOccasion(o) ]]</option>
                 </select>
                 <button class="small-btn" @click="loadOccasionRecommendations">[[ t.refreshOccasionRecommend ]]</button>
             </div>
@@ -87,7 +88,7 @@
                 <div v-if="occasionItems.length" class="sim-grid">
                     <div class="sim-card" v-for="item in occasionItems" :key="item.id">
                         <img :src="item.image_url" />
-                        <div><strong>[[ item.category_name ]]</strong></div>
+                        <div><strong>[[ displayCategory(item.category_name) ]]</strong></div>
                         <div class="muted">[[ t.score ]]: [[ item.score ]]</div>
                         <div class="muted">[[ item.reasons ? item.reasons.join(' / ') : '' ]]</div>
                     </div>
@@ -104,8 +105,8 @@
                         <div class="outfit-items">
                             <div class="outfit-item" v-for="piece in outfit.items" :key="piece.id">
                                 <img :src="piece.image_url" />
-                                <div class="muted">[[ piece.role ]]</div>
-                                <div><strong>[[ piece.category_name ]]</strong></div>
+                                <div class="muted">[[ displayRole(piece.role) ]]</div>
+                                <div><strong>[[ displayCategory(piece.category_name) ]]</strong></div>
                             </div>
                         </div>
 
@@ -130,8 +131,8 @@
                 <div v-if="searchResults.length" class="sim-grid">
                     <div class="sim-card" v-for="item in searchResults" :key="item.id">
                         <img :src="item.image_url" />
-                        <div><strong>[[ item.category_name ]]</strong></div>
-                        <div class="muted">[[ item.main_category || 'Others' ]]</div>
+                        <div><strong>[[ displayCategory(item.category_name) ]]</strong></div>
+                        <div class="muted">[[ displayMainCategory(item.main_category || 'Others') ]]</div>
                     </div>
                 </div>
                 <div v-else class="muted">[[ t.noSearchResult ]]</div>
@@ -151,13 +152,13 @@
 
                 <div class="section" v-if="storeResult">
                     <h4>[[ t.recognitionResult ]]</h4>
-                    <div>[[ t.category ]]: [[ storeResult.stored_item.category_name ]]</div>
+                    <div>[[ t.category ]]: [[ displayCategory(storeResult.stored_item.category_name) ]]</div>
                     <div>[[ t.confidence ]]: [[ storeResult.stored_item.category_conf ]]</div>
-                    <div>[[ t.category ]]: [[ storeResult.stored_item.main_category || 'Others' ]]</div>
+                    <div>[[ t.category ]]: [[ displayMainCategory(storeResult.stored_item.main_category || 'Others') ]]</div>
                     <div>[[ t.season ]]: [[ storeResult.stored_item.season ]]</div>
                     <div>[[ t.thickness ]]: [[ storeResult.stored_item.thickness ]]</div>
                     <div>
-                        <span class="tag" v-for="attr in storeResult.stored_item.attribute_names" :key="attr">[[ attr ]]</span>
+                        <span class="tag" v-for="attr in storeResult.stored_item.attribute_names" :key="attr">[[ displayAttr(attr) ]]</span>
                     </div>
                 </div>
 
@@ -166,7 +167,7 @@
                     <div class="sim-grid">
                         <div class="sim-card" v-for="item in storeResult.similar_items" :key="item.id">
                             <img :src="item.image_url" />
-                            <div>[[ item.category_name ]]</div>
+                            <div>[[ displayCategory(item.category_name) ]]</div>
                             <div class="muted">[[ t.similarity ]]: [[ item.score ]]</div>
                         </div>
                     </div>
@@ -183,13 +184,13 @@
 
                 <div class="section" v-if="searchResult">
                     <h4>[[ t.queryRecognition ]]</h4>
-                    <div>[[ t.category ]]: [[ searchResult.query_result.category_name ]]</div>
+                    <div>[[ t.category ]]: [[ displayCategory(searchResult.query_result.category_name) ]]</div>
                     <div>[[ t.confidence ]]: [[ searchResult.query_result.category_conf ]]</div>
-                    <div>[[ t.category ]]: [[ searchResult.query_result.main_category || 'Others' ]]</div>
+                    <div>[[ t.category ]]: [[ displayMainCategory(searchResult.query_result.main_category || 'Others') ]]</div>
                     <div>[[ t.season ]]: [[ searchResult.query_result.season ]]</div>
                     <div>[[ t.thickness ]]: [[ searchResult.query_result.thickness ]]</div>
                     <div>
-                        <span class="tag" v-for="attr in searchResult.query_result.attribute_names" :key="attr">[[ attr ]]</span>
+                        <span class="tag" v-for="attr in searchResult.query_result.attribute_names" :key="attr">[[ displayAttr(attr) ]]</span>
                     </div>
                 </div>
 
@@ -198,7 +199,7 @@
                     <div v-if="searchResult.similar_items.length" class="sim-grid">
                         <div class="sim-card" v-for="item in searchResult.similar_items" :key="item.id">
                             <img :src="item.image_url" />
-                            <div>[[ item.category_name ]]</div>
+                            <div>[[ displayCategory(item.category_name) ]]</div>
                             <div class="muted">[[ t.similarity ]]: [[ item.score ]]</div>
                         </div>
                     </div>
@@ -211,6 +212,7 @@
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/display_translations.js') }}"></script>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
 </html>

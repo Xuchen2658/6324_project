@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request, session
 
 from app.config.settings import CITY_OPTIONS
 from app.core.auth import current_user_id, login_required
@@ -29,10 +29,16 @@ def resolve_weather(city: str):
     return resolved_city, weather
 
 
+def get_current_language():
+    lang = session.get("language", "zh")
+    return "en" if lang == "en" else "zh"
+
+
 def register_dashboard_api_routes(app):
     @app.route("/api/dashboard")
     @login_required
     def api_dashboard():
+        lang = get_current_language()
         city = request.args.get("city", CITY_OPTIONS[0]).strip() or CITY_OPTIONS[0]
         resolved_city, weather = resolve_weather(city)
 
@@ -41,7 +47,7 @@ def register_dashboard_api_routes(app):
 
         ranked = []
         for item in items:
-            score, reasons = score_item_for_today(item, weather)
+            score, reasons = score_item_for_today(item, weather, lang)
             ranked.append({
                 **item,
                 "score": score,
@@ -61,6 +67,7 @@ def register_dashboard_api_routes(app):
     @app.route("/api/recommend_by_occasion")
     @login_required
     def api_recommend_by_occasion():
+        lang = get_current_language()
         city = request.args.get("city", CITY_OPTIONS[0]).strip() or CITY_OPTIONS[0]
         occasion = request.args.get("occasion", "Daily").strip().title()
         if occasion not in OCCASION_OPTIONS:
@@ -73,7 +80,7 @@ def register_dashboard_api_routes(app):
 
         ranked = []
         for item in items:
-            score, reasons = score_item_for_occasion(item, weather, occasion)
+            score, reasons = score_item_for_occasion(item, weather, occasion, lang)
             ranked.append({
                 **item,
                 "score": score,
@@ -92,6 +99,7 @@ def register_dashboard_api_routes(app):
     @app.route("/api/recommend_outfits")
     @login_required
     def api_recommend_outfits():
+        lang = get_current_language()
         city = request.args.get("city", CITY_OPTIONS[0]).strip() or CITY_OPTIONS[0]
         occasion = request.args.get("occasion", "Daily").strip().title()
         if occasion not in OCCASION_OPTIONS:
@@ -102,7 +110,7 @@ def register_dashboard_api_routes(app):
         rows = get_user_clothes(current_user_id())
         items = [clothes_row_to_dict(r) for r in rows]
 
-        outfits = build_outfit_recommendations(items, weather, occasion, top_k=5)
+        outfits = build_outfit_recommendations(items, weather, occasion, top_k=5, lang=lang)
 
         return jsonify({
             "occasion": occasion,

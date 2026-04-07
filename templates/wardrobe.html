@@ -83,7 +83,7 @@
                     :class="{ active: selectedCategory === cat }"
                     @click="selectedCategory = cat"
                 >
-                    [[ cat ]]
+                    [[ displayMainCategory(cat) ]]
                 </button>
             </div>
 
@@ -103,10 +103,10 @@
 
                         <img :src="item.image_url" :alt="item.filename" />
 
-                        <div class="title">[[ item.category_name || 'Unknown' ]]</div>
+                        <div class="title">[[ displayCategory(item.category_name || 'Unknown') ]]</div>
 
                         <div class="meta">
-                            <div>[[ t.mainCategory ]]: [[ item.main_category || 'Others' ]]</div>
+                            <div>[[ t.mainCategory ]]: [[ displayMainCategory(item.main_category || 'Others') ]]</div>
                             <div>[[ t.confidence ]]: [[ item.category_conf || 'N/A' ]]</div>
                             <div>[[ t.filename ]]: [[ item.filename ]]</div>
                             <div>[[ t.season ]]: [[ item.season || 'Unknown' ]]</div>
@@ -115,7 +115,7 @@
                         </div>
 
                         <div style="margin-top: 8px;">
-                            <span class="tag" v-for="attr in item.attribute_names" :key="attr">[[ attr ]]</span>
+                            <span class="tag" v-for="attr in item.attribute_names" :key="attr">[[ displayAttr(attr) ]]</span>
                         </div>
 
                         <button class="danger full-width-btn" @click="deleteItem(item.id)">
@@ -130,6 +130,7 @@
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/display_translations.js') }}"></script>
 <script src="{{ url_for('static', filename='js/wardrobe.js') }}"></script>
 </body>
 </html>

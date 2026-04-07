@@ -26,10 +26,13 @@ const app = createApp({
         const occasionItems = ref([]);
         const outfitRecommendations = ref([]);
 
+        // 新增：温度单位
+        const tempUnit = ref("C");
+
         const messages = {
             zh: {
                 currentUser: '当前用户',
-                viewWardrobe: '查看衣橱库',
+                viewWardrobe: '查看衣橱',
                 logout: '退出',
                 todayWeather: '今日天气',
                 refreshWeather: '刷新天气',
@@ -43,13 +46,13 @@ const app = createApp({
                 noWeather: '未获取到天气信息',
                 todayRecommendedClothes: '今日适合穿的衣服',
                 score: '匹配分数',
-                noTodayRecommendation: '当前衣橱库暂无今日推荐',
+                noTodayRecommendation: '当前衣橱暂无今日推荐',
                 searchByCategory: '按类别搜索衣服',
                 searchPlaceholder: '输入类别，例如 hoodie / shirt / skirt',
                 search: '搜索',
                 noSearchResult: '没有找到该类别衣物',
                 storeUpload: '上传衣物',
-                storeUploadDesc: '选择单张或多张图片后，点击提交直接上传到当前账号衣橱库，并参与后续相似检索。',
+                storeUploadDesc: '选择单张或多张图片后，点击提交直接上传到当前账号衣橱。',
                 submit: '提交',
                 recognitionResult: '识别结果',
                 category: '类别',
@@ -60,11 +63,11 @@ const app = createApp({
                 mostSimilarAfterStore: '入库后最相似衣物',
                 similarity: '相似度',
                 findSimilar: '找相似',
-                findSimilarDesc: '上传图片不入库，只在当前账号已有衣橱库中搜索最相似衣物。',
+                findSimilarDesc: '上传图片不入库，只在当前账号已有衣橱中搜索最相似衣物。',
                 searchOnly: '找相似',
                 queryRecognition: '查询图识别结果',
-                wardrobeSimilarItems: '库内相似衣物',
-                noSimilarInWardrobe: '当前衣橱库为空，或没有可比较的衣物。',
+                wardrobeSimilarItems: '衣橱内相似衣物',
+                noSimilarInWardrobe: '当前衣橱为空，或没有可比较的衣物。',
                 uploadDone: '上传完成',
                 recentDeleted: '最近删除',
                 occasion: '场合',
@@ -74,7 +77,8 @@ const app = createApp({
                 noOccasionItems: '当前衣橱中没有适合该场合的单品推荐',
                 noOutfits: '当前衣橱中暂时无法生成该场合的搭配',
                 outfitScore: '搭配分数',
-                reasons: '推荐理由'
+                reasons: '推荐理由',
+                tempUnit: '温度单位'
             },
             en: {
                 currentUser: 'Current User',
@@ -99,7 +103,7 @@ const app = createApp({
                 search: 'Search',
                 noSearchResult: 'No clothes found in this category',
                 storeUpload: 'Upload Clothes',
-                storeUploadDesc: 'Select one or multiple images, then click Submit to upload directly to the current wardrobe.',
+                storeUploadDesc: 'Select one or more images, then click Submit to upload directly to the current wardrobe.',
                 submit: 'Submit',
                 recognitionResult: 'Recognition Result',
                 category: 'Category',
@@ -123,11 +127,18 @@ const app = createApp({
                 noOccasionItems: 'No item recommendations for this occasion',
                 noOutfits: 'No outfit combinations available for this occasion',
                 outfitScore: 'Outfit Score',
-                reasons: 'Reasons'
+                reasons: 'Reasons',
+                tempUnit: 'Temperature Unit'
             }
         };
 
         const t = computed(() => messages[language.value] || messages.zh);
+
+        const displayCategory = (value) => window.DisplayTranslator.displayCategory(language.value, value);
+        const displayMainCategory = (value) => window.DisplayTranslator.displayMainCategory(language.value, value);
+        const displayRole = (value) => window.DisplayTranslator.displayRole(language.value, value);
+        const displayOccasion = (value) => window.DisplayTranslator.displayOccasion(language.value, value);
+        const displayAttr = (value) => window.DisplayTranslator.displayAttr(language.value, value);
 
         const loadDashboard = async () => {
             try {
@@ -177,6 +188,8 @@ const app = createApp({
             try {
                 const data = await postJSON('/api/language', { language: language.value });
                 language.value = data.language || language.value;
+                await loadDashboard();
+                await loadOccasionRecommendations();
             } catch (err) {
                 alert(err.message);
             }
@@ -195,7 +208,6 @@ const app = createApp({
             searchPreview.value = file ? URL.createObjectURL(file) : '';
         };
 
-        // 合并单张上传和批量上传
         const submitStore = async () => {
             if (!storeFiles.value.length) {
                 alert('Please choose image files');
@@ -239,9 +251,32 @@ const app = createApp({
             }
         };
 
+        const celsiusToFahrenheit = (celsius) => {
+            if (celsius === null || celsius === undefined || celsius === '') return null;
+            return (Number(celsius) * 9 / 5) + 32;
+        };
+
+        const formatTemperature = (value) => {
+            if (value === null || value === undefined || value === '') return 'N/A';
+            const num = Number(value);
+            if (Number.isNaN(num)) return 'N/A';
+
+            if (tempUnit.value === "F") {
+                return `${celsiusToFahrenheit(num).toFixed(1)}°F`;
+            }
+            return `${num.toFixed(1)}°C`;
+        };
+
         const formatWeatherValue = (value, suffix = '') => {
+            if (suffix === '°C') {
+                return formatTemperature(value);
+            }
             if (value === null || value === undefined || value === '') return 'N/A';
             return `${value}${suffix}`;
+        };
+
+        const toggleTempUnit = () => {
+            tempUnit.value = tempUnit.value === "C" ? "F" : "C";
         };
 
         const goWardrobe = () => {
@@ -290,7 +325,14 @@ const app = createApp({
             formatWeatherValue,
             goWardrobe,
             goRecentDeleted,
-            logout
+            logout,
+            displayCategory,
+            displayMainCategory,
+            displayRole,
+            displayOccasion,
+            displayAttr,
+            tempUnit,
+            toggleTempUnit
         };
     }
 });

@@ -24,7 +24,7 @@ const app = createApp({
                 searchPlaceholder: '输入类别搜索，例如 hoodie / shirt / skirt',
                 searchHint: '可按类别关键字搜索当前账号衣橱中的衣物。',
                 totalItems: '当前显示数量',
-                emptyWardrobe: '当前衣橱库为空，或没有符合筛选条件的衣物。',
+                emptyWardrobe: '当前衣橱为空，或没有符合筛选条件的衣物。',
                 confidence: '置信度',
                 filename: '文件名',
                 season: '季节',
@@ -87,6 +87,10 @@ const app = createApp({
         };
 
         const t = computed(() => messages[language.value] || messages.zh);
+
+        const displayCategory = (value) => window.DisplayTranslator.displayCategory(language.value, value);
+        const displayMainCategory = (value) => window.DisplayTranslator.displayMainCategory(language.value, value);
+        const displayAttr = (value) => window.DisplayTranslator.displayAttr(language.value, value);
 
         const categoryOptions = computed(() => {
             const set = new Set();
@@ -258,7 +262,10 @@ const app = createApp({
             uploadBatch,
             allSelected,
             toggleSelectAll,
-            batchDelete
+            batchDelete,
+            displayCategory,
+            displayMainCategory,
+            displayAttr
         };
     }
 });
