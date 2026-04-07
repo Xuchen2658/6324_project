@@ -7,11 +7,13 @@ def infer_main_category(category_name: str, attribute_names: list[str]) -> str:
     cat = (category_name or "").lower()
     attrs = [a.lower() for a in attribute_names]
 
-    if any(k in cat for k in ["shoe", "sneaker", "boot", "heel", "sandal"]):
+    if "dress" in cat:
+        return "Skirts"
+    if any(k in cat for k in ["shoe", "sneaker", "boot", "heel", "sandal", "loafer"]):
         return "Shoes"
     if any(k in cat for k in ["hat", "cap", "beanie"]):
         return "Hats"
-    if any(k in cat for k in ["skirt", "dress"]):
+    if any(k in cat for k in ["skirt"]):
         return "Skirts"
     if any(k in cat for k in ["pant", "jean", "trouser", "shorts", "legging"]):
         return "Pants"
@@ -19,11 +21,11 @@ def infer_main_category(category_name: str, attribute_names: list[str]) -> str:
         return "Sweaters"
     if any(k in cat for k in ["coat", "jacket", "hoodie", "outerwear", "blazer"]):
         return "Outerwear"
-    if any("short" in a and "sleeve" in a for a in attrs):
+    if any("short sleeve" in a for a in attrs):
         return "Short Sleeve"
-    if any("long" in a and "sleeve" in a for a in attrs):
+    if any("long sleeve" in a for a in attrs):
         return "Long Sleeve"
-    if any(k in cat for k in ["shirt", "top", "blouse", "tee", "t-shirt", "tank"]):
+    if any(k in cat for k in ["shirt", "top", "blouse", "tee", "t-shirt", "tank", "pullover"]):
         return "Tops"
 
     return "Others"
@@ -36,14 +38,14 @@ def infer_extra_tags(category_name: str, attribute_names: list[str]) -> dict:
     season = "All Season"
     thickness = "Medium"
 
-    if any(k in cat for k in ["coat", "jacket", "sweater", "hoodie", "blazer"]):
+    if any(k in cat for k in ["coat", "jacket", "sweater", "hoodie", "blazer", "cardigan"]):
         season = "Autumn/Winter"
         thickness = "Thick"
-    elif any(k in cat for k in ["t-shirt", "tee", "tank", "shorts"]):
+    elif any(k in cat for k in ["t-shirt", "tee", "tank", "shorts", "skirt", "dress"]):
         season = "Spring/Summer"
         thickness = "Thin"
 
-    if any("long" in a and "sleeve" in a for a in attrs):
+    if any("long sleeve" in a for a in attrs):
         thickness = "Medium"
 
     return {
@@ -70,7 +72,7 @@ def infer_role(category_name: str, main_category: str, attribute_names: list[str
     if main == "hats":
         return "Hat"
 
-    if any(k in cat for k in ["shirt", "top", "blouse", "tee", "t-shirt", "tank"]):
+    if any(k in cat for k in ["shirt", "top", "blouse", "tee", "t-shirt", "tank", "pullover"]):
         return "Top"
     if any(k in cat for k in ["pant", "jean", "trouser", "shorts", "legging", "skirt"]):
         return "Bottom"
@@ -92,27 +94,21 @@ def infer_occasion_tags(category_name: str, main_category: str, attribute_names:
 
     tags = set()
 
-    # Daily / Travel
     if any(k in cat for k in ["hoodie", "jean", "t-shirt", "tee", "shirt", "sneaker", "coat", "jacket"]):
         tags.update(["Daily", "Travel"])
 
-    # Work / Formal
     if any(k in cat for k in ["blazer", "shirt", "blouse", "trouser", "heel", "coat", "dress"]):
         tags.update(["Work", "Formal"])
 
-    # Party
     if any(k in cat for k in ["dress", "skirt", "heel", "blouse"]):
         tags.add("Party")
 
-    # Sport
     if any(k in cat for k in ["tank", "legging", "shorts", "sneaker"]):
         tags.add("Sport")
 
-    # Home
     if any(k in cat for k in ["hoodie", "sweater", "knit", "cardigan", "shorts", "tee", "t-shirt"]):
         tags.add("Home")
 
-    # main_category 补充
     if main in {"tops", "short sleeve", "long sleeve"}:
         tags.add("Daily")
     if main == "outerwear":
@@ -124,7 +120,6 @@ def infer_occasion_tags(category_name: str, main_category: str, attribute_names:
     if main == "shoes":
         tags.update(["Daily", "Travel"])
 
-    # 属性补充
     if any("long sleeve" in a for a in attrs):
         tags.update(["Work", "Daily"])
     if any("short sleeve" in a for a in attrs):
@@ -158,6 +153,7 @@ def get_user_clothes(user_id: int, sort_order: str = "newest"):
 
 
 def clothes_row_to_dict(row):
+    keys = row.keys()
     return {
         "id": row["id"],
         "filename": row["filename"],
@@ -169,8 +165,8 @@ def clothes_row_to_dict(row):
         "thickness": row["thickness"],
         "created_at": row["created_at"],
         "attribute_names": json.loads(row["attributes_json"]) if row["attributes_json"] else [],
-        "occasion_tags": json.loads(row["occasion_tags_json"]) if row["occasion_tags_json"] else [],
-        "role": row["role"] if "role" in row.keys() else None
+        "occasion_tags": json.loads(row["occasion_tags_json"]) if "occasion_tags_json" in keys and row["occasion_tags_json"] else [],
+        "role": row["role"] if "role" in keys else None
     }
 
 
@@ -215,6 +211,7 @@ def save_cloth_record(user_id, filename, image_relpath, feature_relpath, result)
 
 def move_to_deleted_table(row):
     conn = get_db()
+    keys = row.keys()
     conn.execute("""
         INSERT INTO deleted_clothes (
             original_cloth_id, user_id, filename, image_relpath, feature_relpath,
@@ -233,8 +230,8 @@ def move_to_deleted_table(row):
         row["season"],
         row["thickness"],
         row["attributes_json"],
-        row["occasion_tags_json"] if "occasion_tags_json" in row.keys() else None,
-        row["role"] if "role" in row.keys() else None
+        row["occasion_tags_json"] if "occasion_tags_json" in keys else None,
+        row["role"] if "role" in keys else None
     ))
     conn.commit()
     conn.close()

@@ -1,7 +1,16 @@
 import requests
+import time
 
 
 OCCASION_OPTIONS = ["Daily", "Work", "Sport", "Party", "Formal", "Travel", "Home"]
+
+# 天气缓存
+_weather_cache = {}
+CACHE_TTL = 600  # 10分钟
+
+
+def _get_cache_key(lat, lon):
+    return f"{round(lat, 2)}_{round(lon, 2)}"
 
 
 def get_coordinates_by_city(city_name: str):
@@ -13,7 +22,7 @@ def get_coordinates_by_city(city_name: str):
             "language": "en",
             "format": "json"
         }
-        resp = requests.get(url, params=params, timeout=10)
+        resp = requests.get(url, params=params, timeout=5)
         resp.raise_for_status()
         data = resp.json()
 
@@ -33,6 +42,14 @@ def get_coordinates_by_city(city_name: str):
 
 
 def get_weather_by_coordinates(latitude: float, longitude: float):
+    key = _get_cache_key(latitude, longitude)
+    now = time.time()
+
+    if key in _weather_cache:
+        cached = _weather_cache[key]
+        if now - cached["time"] < CACHE_TTL:
+            return cached["data"]
+
     try:
         url = "https://api.open-meteo.com/v1/forecast"
         params = {
@@ -43,14 +60,15 @@ def get_weather_by_coordinates(latitude: float, longitude: float):
             "timezone": "auto",
             "forecast_days": 1
         }
-        resp = requests.get(url, params=params, timeout=10)
+
+        resp = requests.get(url, params=params, timeout=5)
         resp.raise_for_status()
         data = resp.json()
 
         current = data.get("current", {})
         daily = data.get("daily", {})
 
-        return {
+        weather = {
             "temperature": current.get("temperature_2m"),
             "apparent_temperature": current.get("apparent_temperature"),
             "precipitation": current.get("precipitation"),
@@ -71,8 +89,19 @@ def get_weather_by_coordinates(latitude: float, longitude: float):
                 if daily.get("temperature_2m_min") else None
             )
         }
+
+        _weather_cache[key] = {
+            "time": now,
+            "data": weather
+        }
+
+        return weather
+
     except Exception as e:
         print(f"⚠️ 天气获取失败: {e}")
+        if key in _weather_cache:
+            print("⚠️ 使用旧缓存天气")
+            return _weather_cache[key]["data"]
         return None
 
 
@@ -268,7 +297,6 @@ def build_outfit_recommendations(items: list[dict], weather: dict | None, occasi
         chosen = []
         reasons = []
         total_score = 0
-
         used_ids = set()
         valid = True
 
@@ -278,6 +306,7 @@ def build_outfit_recommendations(items: list[dict], weather: dict | None, occasi
                 if item["id"] not in used_ids:
                     candidate = item
                     break
+
             if not candidate:
                 valid = False
                 break
@@ -296,7 +325,6 @@ def build_outfit_recommendations(items: list[dict], weather: dict | None, occasi
         if not valid:
             continue
 
-        # 简单的层次加分
         if "Outerwear" in template and weather and (weather.get("temperature") is not None and weather.get("temperature") <= 18):
             total_score += 2
             reasons.append("叠穿更适合当前偏凉天气")
@@ -317,3 +345,4 @@ def build_outfit_recommendations(items: list[dict], weather: dict | None, occasi
 
     outfits.sort(key=lambda x: x["score"], reverse=True)
     return outfits[:top_k]
+

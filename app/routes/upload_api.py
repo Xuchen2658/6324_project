@@ -64,6 +64,7 @@ def register_upload_api_routes(app):
                     "image_url": image_relpath,
                     "category_name": result["category_name"],
                     "category_conf": result["category_conf"],
+                    "color_name": result.get("color_name"),
                     "main_category": result["main_category"],
                     "season": result["season"],
                     "thickness": result["thickness"],
@@ -129,6 +130,7 @@ def register_upload_api_routes(app):
                     "image_url": image_relpath,
                     "category_name": result["category_name"],
                     "category_conf": result["category_conf"],
+                    "color_name": result.get("color_name"),
                     "main_category": result["main_category"],
                     "season": result["season"],
                     "thickness": result["thickness"],
@@ -180,6 +182,7 @@ def register_upload_api_routes(app):
                 "query_result": {
                     "category_name": result["category_name"],
                     "category_conf": result["category_conf"],
+                    "color_name": result.get("color_name"),
                     "main_category": result["main_category"],
                     "season": result["season"],
                     "thickness": result["thickness"],

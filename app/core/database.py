@@ -64,7 +64,7 @@ def init_db():
         )
     """)
 
-    # 新增字段，兼容老数据库
+    # 推荐系统需要的字段
     ensure_column(conn, "clothes", "occasion_tags_json", "TEXT")
     ensure_column(conn, "clothes", "role", "TEXT")
     ensure_column(conn, "deleted_clothes", "occasion_tags_json", "TEXT")

@@ -1,249 +1,223 @@
-# 👕 AI Smart Wardrobe System
+# 🧠 AI Smart Wardrobe System
 
-## 📌 Project Overview
+A **Flask + PyTorch + YOLO + multi-model fusion** based intelligent wardrobe system that provides:
 
-The **AI Smart Wardrobe System** is a full-stack web application that integrates **computer vision, machine learning, and web development** to help users intelligently manage their clothing and receive outfit recommendations.
-
-Users can upload clothing images, and the system will automatically:
-
-* Recognize clothing category and attributes
-* Store items in a personal wardrobe
-* Recommend outfits based on current weather
-* Find visually similar clothes using feature embeddings
-
-This project is built using **Flask + PyTorch + Vue + SQLite**.
+* 👕 Clothing recognition (category + attributes + color)
+* 📊 Wardrobe management (filter / search / sorting)
+* 🌦 Weather-aware recommendations
+* 🎯 Occasion-based recommendations (Work / Travel / Sport, etc.)
+* 👗 Intelligent outfit generation (Top + Bottom / Dress / Layered outfits)
 
 ---
 
-## 🚀 Features
+# 🚀 Key Features
 
-### 👤 User System
+## 🧠 Dual-Model Fusion (Core Architecture)
 
-* User registration and login
-* Session-based authentication
-* Multi-user data isolation (each user has an independent wardrobe)
+This system uses **two models collaboratively**:
 
----
+| Model                         | Responsibility                                       |
+| ----------------------------- | ---------------------------------------------------- |
+| ✅ Legacy Model (ResNet50)     | Clothing category classification + feature embedding |
+| ✅ New Model (YOLO + ConvNeXt) | Color detection + fine-grained attributes            |
 
-### 🧥 Clothing Management
+### Benefits:
 
-* Single upload & batch upload
-* Automatic AI recognition:
-
-  * Category (e.g., shirt, pants, coat)
-  * Attributes (multi-label)
-  * Main category (Tops / Pants / Shoes / etc.)
-* Automatically generated tags:
-
-  * Season (Spring/Summer, Autumn/Winter)
-  * Thickness (Thin / Medium / Thick)
-* Store feature vectors for similarity search
-* View wardrobe with:
-
-  * Sorting (Newest / Oldest)
-  * Category filtering
-  * Keyword search
+* Stable category prediction (no more incorrect outputs like *“Sateen”*)
+* Rich attribute understanding (color, pattern, sleeve type, etc.)
 
 ---
 
-### 🔍 Similarity Search
+## 🎨 Advanced Color Detection
 
-* Upload an image (not stored)
-* Retrieve Top-K most similar clothes from wardrobe
-* Based on **cosine similarity of deep features**
+* YOLO-based human segmentation
+* HSV color space analysis
+* Multi-region detection (upper/lower body)
+* KMeans color feature extraction
 
----
+### Improvements:
 
-### 🌤 Weather-Based Recommendation
-
-* Select city from dropdown
-* Fetch real-time weather via API
-* Recommend suitable clothes from wardrobe
-* Scoring based on:
-
-  * Temperature
-  * Rain probability
-  * Clothing thickness & season
+* ✅ Better beige vs white distinction
+* ✅ Reduced red vs pink confusion
+* ✅ Skin-color interference removed
 
 ---
 
-### 🗑 Advanced Wardrobe Operations
+## 👗 Intelligent Outfit Recommendation
 
-* Delete single item
-* Batch delete
-* Recently deleted list
-* Restore deleted items
+Automatically generates outfit combinations:
 
----
-
-### 🌐 Multi-Language Support
-
-* Chinese
-* English
-* Spanish
-* Japanese
-* Korean
-
----
-
-## 🧠 AI Model
-
-* Backbone: **ResNet50**
-* Multi-task learning:
-
-  * Category classification (50 classes)
-  * Attribute prediction (1000 classes)
-* Feature extraction:
-
-  * 2048-dim embedding
-* Similarity:
-
-  * Cosine similarity
-
----
-
-## 🛠 Tech Stack
-
-| Layer      | Technology           |
-| ---------- | -------------------- |
-| Frontend   | Vue 3 + HTML + CSS   |
-| Backend    | Flask (Python)       |
-| AI Model   | PyTorch              |
-| Database   | SQLite               |
-| Image Proc | PIL + torchvision    |
-| API        | Open-Meteo (Weather) |
-
----
-
-## 📂 Project Structure
-
+```text
+Top + Bottom
+Dress
+Top + Bottom + Outerwear
 ```
-# 👗 AI Smart Wardrobe System
 
-## 📌 Project Overview
-This project is an AI-powered smart wardrobe system built with Flask and PyTorch.  
-It allows users to upload clothing images, automatically recognize attributes, manage a personal wardrobe, and receive recommendations based on weather and similarity search.
+### Supports:
 
----
-
-## ✨ Features
-
-### 👤 User System
-- Register / Login / Logout
-- Session-based authentication
-- Multi-user wardrobe isolation
-
-### 🧥 Clothing Management
-- Upload clothing images (single & batch)
-- Automatic recognition:
-  - Category
-  - Attributes
-  - Main category
-- Auto-generated:
-  - Season
-  - Thickness
-- Store feature vectors for similarity search
-
-### 🔍 Similarity Search
-- Upload an image to find similar items
-- Cosine similarity based on feature vectors
-- Helps avoid duplicate purchases
-
-### 🌦 Weather-Based Recommendation
-- Fetch real-time weather data
-- Recommend suitable clothes based on:
-  - Temperature
-  - Season
-  - Thickness
-
-### 🗂 Wardrobe Features
-- View all clothes
-- Search by category
-- Sort by time (newest / oldest)
-- Category filtering
-- Batch upload & batch delete
-
-### 🗑 Recently Deleted
-- View deleted items
-- Restore deleted clothes
+* Layered outfits
+* Single-piece outfits
+* Daily practical combinations
 
 ---
 
-## 🛠 Tech Stack
+## 🎯 Occasion-Based Recommendation
 
-| Layer       | Technology |
-|------------|-----------|
-| Backend    | Flask |
-| ML Model   | PyTorch (ResNet-based) |
-| Frontend   | HTML + Vue 3 |
-| Database   | SQLite |
-| Storage    | Local file system |
+Supported occasions:
+
+* Daily
+* Work
+* Sport
+* Party
+* Formal
+* Travel
+* Home
+
+### Logic:
+
+* Matches `occasion_tags`
+* Uses clothing `role` (Top / Bottom / Dress / Outerwear)
+* Category keyword-based scoring
 
 ---
 
-## 📂 Project Structure
+## 🌦 Weather-Aware Recommendation
+
+Powered by Open-Meteo API:
+
+* Temperature
+* Apparent temperature
+* Precipitation probability
+
+### Behavior:
+
+* Cold → recommend thick clothing
+* Hot → recommend light clothing
+* Rain → recommend outerwear / dark colors
+
+---
+
+## ⚡ Weather Cache Optimization
+
+* Weather is cached for **10 minutes per city**
+* Prevents excessive API calls
+
+### Fixes:
+
+* ❌ 502 errors
+* ❌ Timeout issues
+* ❌ Slow response
+
+---
+
+# 🧩 System Features
+
+## 👤 User System
+
+* Register / Login / Logout
+* Multi-user isolation
+
+---
+
+## 👕 Clothing Management
+
+* Single upload
+* Batch upload
+* Batch delete
+* Recently deleted (Recycle Bin)
+* Restore items
+
+---
+
+## 🧥 Wardrobe Features
+
+* View all items
+* Category filtering (Tops / Pants / Skirts / Shoes, etc.)
+* Keyword search
+* Sorting (Newest / Oldest)
+
+---
+
+## 🤖 AI Recognition Output
+
+Each clothing item includes:
+
+* `category_name`
+* `main_category`
+* `attribute_names`
+* `color_name`
+* `season`
+* `thickness`
+* `feature` (for similarity search)
+
+---
+
+## 👗 Recommendation Fields
+
+Additional attributes for recommendation:
+
+* `occasion_tags`
+* `role` (Top / Bottom / Dress / Outerwear / Shoes)
+* `cloth_type` (single / two_piece)
+
+---
+
+# 📁 Project Structure
 
 ```text
 smart-wardrobe/
 │
+├── backend.py
+├── README.md
+├── requirements.txt
+│
 ├── app/
-│   ├── config/
-│   ├── core/
 │   ├── models/
-│   ├── routes/
+│   │   ├── legacy_predictor.py
+│   │   ├── attr_predictor.py
+│   │   └── predictor.py
+│   │
 │   ├── services/
-│   └── utils/
+│   │   ├── clothes_service.py
+│   │   └── weather_service.py
+│   │
+│   ├── routes/
+│   │   ├── upload_api.py
+│   │   ├── dashboard_api.py
+│   │   └── deleted_api.py
 │
 ├── templates/
-├── static/
-│   ├── css/
-│   ├── js/
-│   └── uploads/
+├── static/uploads/
+├── dataset/Anno_coarse/
 │
-├── dataset/
 ├── checkpoint_c2_full_1000.pth
-├── backend.py
-├── requirements.txt
-└── README.md
+├── model0405.pth
+├── yolov8n-seg.pt
 ```
 
 ---
 
-## ⚙️ Installation & Run
+# ⚙️ Installation & Setup
 
-### 1️⃣ Clone project
-
-```bash
-git clone https://github.com/YOUR_USERNAME/smart-wardrobe.git
-cd smart-wardrobe
-```
-
----
-
-### 2️⃣ Create virtual environment
+## 1️⃣ Create Virtual Environment
 
 ```bash
-python3 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
 ```
 
 ---
 
-### 3️⃣ Install dependencies
+## 2️⃣ Install Dependencies
 
 ```bash
 pip install -r requirements.txt
-```
-
-If missing:
-
-```bash
-pip install flask torch torchvision pillow numpy requests
+pip install ultralytics opencv-python scikit-learn
 ```
 
 ---
 
-### 4️⃣ Run backend
+## 3️⃣ Run the Application
 
 ```bash
 python backend.py
@@ -251,56 +225,100 @@ python backend.py
 
 ---
 
-### 5️⃣ Open browser
+## 4️⃣ Open in Browser
 
+```text
+http://127.0.0.1:5000
 ```
-http://127.0.0.1:5001
+
+---
+
+# 🧠 Recommendation System
+
+## Item Scoring
+
+Based on:
+
+* Occasion matching (+4)
+* Category rules (+1~3)
+* Weather compatibility (+2~3)
+
+---
+
+## Outfit Generation
+
+Steps:
+
+1. Group items by `role`
+2. Rank by score
+3. Generate combinations:
+
+```text
+Top + Bottom
+Dress
+Top + Bottom + Outerwear
 ```
 
 ---
 
-## 📌 Notes
+# ⚠️ Troubleshooting
 
-* Model file (`.pth`) is not included due to size limitation
-* Upload images are ignored by `.gitignore`
-* SQLite database is auto-created
+## ❌ Recommendation score = 0
 
----
+Cause:
 
-## 📈 Future Improvements
+* Missing `occasion_tags` or `role`
 
-* Outfit combination recommendation
-* UI/UX redesign
-* Model optimization (faster inference)
-* Deployment (Docker / Cloud)
-* Mobile support
+Fix:
+
+```bash
+python backfill_occasion_role.py
+```
 
 ---
 
-## 👤 Author
+## ❌ Weather API errors
 
-* Jingxuan Wang
-* Computer Science Graduate Student
-* University of Texas at Arlington
+Fixed:
 
----
-
-## ⭐ Highlights
-
-* Full-stack AI system
-* Real-time recommendation
-* Multi-user support
-* Multi-language UI
-* Practical ML deployment
+* Parameter issues
+* Excessive requests
+* Timeout handling
 
 ---
 
-## 📷 Demo (Optional)
+## ❌ Wrong category prediction
 
-(Add screenshots here if needed)
+Solution:
+
+* Legacy model handles classification
+* New model only handles attributes
 
 ---
 
-## 📜 License
+# 📌 Future Improvements
 
-This project is for academic and educational purposes.
+* Outfit similarity recommendation
+* Save outfit combinations
+* User preference learning
+* Explainable recommendation
+* Multi-language UI (EN / CN / JP / KR)
+
+---
+
+# 🧾 Tech Stack
+
+* Flask
+* PyTorch
+* YOLOv8
+* ConvNeXt
+* OpenCV
+* SQLite
+* Vue (Frontend)
+
+---
+
+# 👨‍💻 Author
+
+UTA CSE Project
+AI Smart Wardrobe System

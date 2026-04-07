@@ -1,65 +1,43 @@
-import numpy as np
-import torch
-from PIL import Image
-from torchvision import transforms
-
-from app.config.settings import MODEL_WEIGHTS
-from app.models.labels import CATEGORY_NAMES, ATTRIBUTE_NAMES
-from app.models.network import MultiTaskResNet
-from app.services.clothes_service import infer_extra_tags, infer_main_category
-from app.utils.constants import TOP_K_ATTRIBUTES
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = MultiTaskResNet().to(device)
-
-if MODEL_WEIGHTS.exists():
-    checkpoint = torch.load(MODEL_WEIGHTS, map_location=device)
-    state_dict = checkpoint["model"] if isinstance(checkpoint, dict) and "model" in checkpoint else checkpoint
-    model.load_state_dict(state_dict, strict=False)
-    model.eval()
-    print(f"✅ 成功加载权重: {MODEL_WEIGHTS} (使用设备: {device})")
-else:
-    print(f"⚠️ 未找到权重文件: {MODEL_WEIGHTS}")
-
-
-def get_transform():
-    return transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406],
-                             [0.229, 0.224, 0.225])
-    ])
+from app.models.attr_predictor import extract_attr_and_color
+from app.models.legacy_predictor import extract_legacy_prediction_and_feature
+from app.services.clothes_service import infer_extra_tags
 
 
 def extract_prediction_and_feature(image_path):
-    transform = get_transform()
-    img = Image.open(image_path).convert("RGB")
-    input_tensor = transform(img).unsqueeze(0).to(device)
+    """
+    双模型融合，保持现有逻辑不变：
+    - 旧模型：类别 / 大类 / 置信度 / feature
+    - 新模型：颜色 / 详细属性
+    """
+    legacy_result = extract_legacy_prediction_and_feature(image_path)
+    attr_result = extract_attr_and_color(image_path)
 
-    with torch.no_grad():
-        cat_logits, attr_logits, feat = model(input_tensor)
+    category_name = legacy_result["category_name"]
+    category_conf = legacy_result["category_conf"]
+    main_category = legacy_result["main_category"]
 
-        cat_probs = torch.softmax(cat_logits, dim=1).squeeze()
-        cat_idx = torch.argmax(cat_probs).item()
+    merged_attributes = []
 
-        attr_probs = torch.sigmoid(attr_logits).squeeze()
-        topk = torch.topk(attr_probs, k=min(TOP_K_ATTRIBUTES, attr_probs.shape[0]))
-        attr_indices = topk.indices.tolist()
+    # 先放新模型属性
+    for attr in attr_result.get("attribute_names", []):
+        if attr not in merged_attributes:
+            merged_attributes.append(attr)
 
-    feature = feat.cpu().numpy().reshape(-1).astype(np.float32)
-    category_name = CATEGORY_NAMES[cat_idx] if cat_idx < len(CATEGORY_NAMES) else "Unknown"
-    category_conf = f"{cat_probs[cat_idx].item():.2%}"
-    attribute_names = [ATTRIBUTE_NAMES[i] for i in attr_indices if i < len(ATTRIBUTE_NAMES)]
+    # 再补一点旧模型属性候选（兜底）
+    for attr in legacy_result.get("legacy_attribute_candidates", [])[:4]:
+        if attr not in merged_attributes:
+            merged_attributes.append(attr)
 
-    tags = infer_extra_tags(category_name, attribute_names)
-    main_category = infer_main_category(category_name, attribute_names)
+    tags = infer_extra_tags(category_name, merged_attributes)
 
     return {
         "category_name": category_name,
         "category_conf": category_conf,
-        "attribute_names": attribute_names,
+        "attribute_names": merged_attributes,
         "main_category": main_category,
         "season": tags["season"],
         "thickness": tags["thickness"],
-        "feature": feature
+        "feature": legacy_result["feature"],   # 保持现有相似检索逻辑不变
+        "color_name": attr_result.get("color_name", "unknown"),
+        "raw_core_categories": attr_result.get("raw_core_categories", [])
     }
